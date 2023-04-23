@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.Exceptions.InvalidFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
+
  @Slf4j
 public class FilmValidator {
 

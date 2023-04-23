@@ -24,20 +24,20 @@ public class FilmValidator {
         return true;
     }
 
-    private boolean isValidName(Film film){
+    private boolean isValidName(Film film) {
         return !film.getName().isBlank();
     }
 
-    private boolean isValidDescription(Film film){
+    private boolean isValidDescription(Film film) {
         return film.getDescription().length() < 200;
     }
 
-    private   boolean isValidReleaseData(Film film) {
+    private boolean isValidReleaseData(Film film) {
         LocalDate date = LocalDate.of(1895,12,27);
         return film.getReleaseDate().isAfter(date);
     }
 
-    private   boolean isValidDuration(Film film){
+    private boolean isValidDuration(Film film) {
         return film.getDuration() > 0;
     }
 }

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -19,17 +18,17 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<User> findAll(){
+    public Collection<User> findAll() {
         return userService.findAll();
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody  User user) {
+    public ResponseEntity<?> create(@Valid @RequestBody User user) {
         return userService.create(user);
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@Valid @RequestBody  User user) {
+    public ResponseEntity<?> update(@Valid @RequestBody User user) {
         return userService.update(user);
     }
 }

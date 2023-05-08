@@ -59,7 +59,7 @@ public class UserValidatorTest {
         Set<ConstraintViolation<User>> violations = validator.validate(user);
 
         String m = getMessage(violations);
-        assertEquals("Логин не может быть пустым", m);
+        assertEquals("Логин не может содержать пробелы", m);
     }
 
     @DisplayName("Проверяет валидацию  пользователя, если логин содержит пробелы")

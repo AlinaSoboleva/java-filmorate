@@ -11,14 +11,14 @@ import java.util.Map;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    @Getter(lazy = true)
-    private static final Map<Integer, Film> films = new HashMap<>();
+    @Getter
+    private final Map<Integer, Film> films = new HashMap<>();
     private int id = 0;
 
     @Override
     public void create(Film film) {
         film.setId(getId());
-        getFilms().put(film.getId(), film);
+        films.put(film.getId(), film);
     }
 
     @Override
@@ -26,8 +26,8 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (film.getId() == 0) {
             film.setId(getId());
         }
-        if (getFilms().containsKey(film.getId())) {
-            getFilms().put(film.getId(), film);
+        if (films.containsKey(film.getId())) {
+            films.put(film.getId(), film);
             return true;
         }
         return false;
@@ -42,8 +42,8 @@ public class InMemoryFilmStorage implements FilmStorage {
         return ++id;
     }
 
-    public static void validationId(Integer id) {
-        if (!getFilms().containsKey(id)) {
+    public void validationId(Integer id) {
+        if (!films.containsKey(id)) {
             throw new FilmIdException(String.format("Фильм с id %s не существует", id));
         }
     }

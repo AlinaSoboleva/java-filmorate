@@ -3,12 +3,13 @@ package ru.yandex.practicum.filmorate.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.Exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.*;
+import javax.validation.constraints.Positive;
+import java.util.Collection;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -34,16 +35,14 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable Integer id) {
+    public ResponseEntity<Film> getFilmById(@PathVariable Integer id) {
         return filmService.getFilmById(id);
     }
 
     @GetMapping("/popular")
     public List<Film> findAll(
-            @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
-        if (count < 0) {
-            throw new IncorrectParameterException("page");
-        }
+            @RequestParam(value = "count", defaultValue = "10", required = false)
+            @Positive(message = "Некорректное значение count") Integer count) {
         return filmService.findAll(count);
     }
 
@@ -53,12 +52,12 @@ public class FilmController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody Film film) {
+    public ResponseEntity<Film> create(@Valid @RequestBody Film film) {
         return filmService.create(film);
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@Valid @RequestBody Film film) {
+    public ResponseEntity<Film> update(@Valid @RequestBody Film film) {
         return filmService.update(film);
     }
 }

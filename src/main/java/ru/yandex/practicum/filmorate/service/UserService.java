@@ -23,15 +23,15 @@ public class UserService {
     }
 
     public void deleteFriend(Integer id, Integer friendId) {
-        InMemoryUserStorage.validationId(id);
-        InMemoryUserStorage.validationId(friendId);
-        InMemoryUserStorage.getUsers().get(id).getFriends().remove(friendId);
-        InMemoryUserStorage.getUsers().get(friendId).getFriends().remove(id);
+        userStorage.validationId(id);
+        userStorage.validationId(friendId);
+        userStorage.getUsers().get(id).getFriends().remove(friendId);
+        userStorage.getUsers().get(friendId).getFriends().remove(id);
     }
 
     public List<User> getCommonFried(Integer id, Integer otherId) {
-        InMemoryUserStorage.validationId(id);
-        InMemoryUserStorage.validationId(otherId);
+        userStorage.validationId(id);
+        userStorage.validationId(otherId);
         List<User> friends = getFriendsList(getUserById(id).getFriends());
         List<User> friends2 = getFriendsList(getUserById(otherId).getFriends());
         friends.retainAll(friends2);
@@ -43,15 +43,15 @@ public class UserService {
     }
 
     public void addFriend(Integer id, Integer friendId) {
-        InMemoryUserStorage.validationId(id);
-        InMemoryUserStorage.validationId(friendId);
-        InMemoryUserStorage.getUsers().get(id).getFriends().add(friendId);
-        InMemoryUserStorage.getUsers().get(friendId).getFriends().add(id);
+        userStorage.validationId(id);
+        userStorage.validationId(friendId);
+        userStorage.getUsers().get(id).getFriends().add(friendId);
+        userStorage.getUsers().get(friendId).getFriends().add(id);
     }
 
     public Collection<User> findAll() {
-        log.debug("Текущее количество пользователей: {}", InMemoryUserStorage.getUsers().size());
-        return InMemoryUserStorage.getUsers().values();
+        log.debug("Текущее количество пользователей: {}", userStorage.getUsers().size());
+        return userStorage.getUsers().values();
     }
 
     public ResponseEntity<User> create(User user) {

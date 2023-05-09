@@ -55,7 +55,7 @@ public class UserValidatorTest {
     @DisplayName("Проверяет валидацию  пользователя, если логин пустой")
     @Test
     void checksTheUserLoginIfItIsEmpty() {
-        user = new User("mail@mail.ru", "", "Alina", LocalDate.of(2023, 4, 22));
+        user = new User("mail@mail.ru", "  ", "Alina", LocalDate.of(2023, 4, 22));
         Set<ConstraintViolation<User>> violations = validator.validate(user);
 
         String m = getMessage(violations);

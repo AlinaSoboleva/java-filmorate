@@ -11,8 +11,8 @@ import java.util.*;
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    @Getter(lazy = true)
-    private static final Map<Integer, User> users = new HashMap<>();
+    @Getter
+    private final Map<Integer, User> users = new HashMap<>();
     private int id = 0;
 
     public List<User> getFriends(Set<Integer> friendsId) {
@@ -34,7 +34,7 @@ public class InMemoryUserStorage implements UserStorage {
             }
         }
         user.setId(getId());
-        getUsers().put(user.getId(), user);
+        users.put(user.getId(), user);
     }
 
     @Override
@@ -42,8 +42,8 @@ public class InMemoryUserStorage implements UserStorage {
         if (user.getId() == 0) {
             user.setId(getId());
         }
-        if (getUsers().containsKey(user.getId())) {
-            getUsers().put(user.getId(), user);
+        if (users.containsKey(user.getId())) {
+            users.put(user.getId(), user);
             return true;
         }
         return false;
@@ -51,21 +51,21 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void delete(User user) {
-        getUsers().remove(user.getId());
+        users.remove(user.getId());
     }
 
     @Override
     public User getById(Integer id) {
         validationId(id);
-        return getUsers().get(id);
+        return users.get(id);
     }
 
     private int getId() {
         return ++id;
     }
 
-    public static void validationId(Integer id) {
-        if (!getUsers().containsKey(id)) {
+    public void validationId(Integer id) {
+        if (!users.containsKey(id)) {
             throw new UserIdException(String.format("Пользователь с id %s не существует", id));
         }
     }

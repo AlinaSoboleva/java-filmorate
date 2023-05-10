@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
@@ -51,12 +52,16 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody User user) {
-        return userService.create(user);
+    public ResponseEntity<User> create(@Valid @RequestBody User user) {
+        return new ResponseEntity<>(userService.create(user), HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@Valid @RequestBody User user) {
-        return userService.update(user);
+    public ResponseEntity<User> update(@Valid @RequestBody User user) {
+        User updatedUser = userService.update(user);
+        if (updatedUser == null){
+            return new ResponseEntity<>(user, HttpStatus.NOT_FOUND);
+        }
+        return  new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

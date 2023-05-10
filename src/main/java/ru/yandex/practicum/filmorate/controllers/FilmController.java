@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -36,7 +37,7 @@ public class FilmController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Film> getFilmById(@PathVariable Integer id) {
-        return filmService.getFilmById(id);
+        return new ResponseEntity<>(filmService.getFilmById(id), HttpStatus.OK);
     }
 
     @GetMapping("/popular")
@@ -53,11 +54,15 @@ public class FilmController {
 
     @PostMapping
     public ResponseEntity<Film> create(@Valid @RequestBody Film film) {
-        return filmService.create(film);
+        return new ResponseEntity<>(filmService.create(film), HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<Film> update(@Valid @RequestBody Film film) {
-        return filmService.update(film);
+        Film updatedFilm = filmService.update(film);
+        if (updatedFilm == null){
+            return new ResponseEntity<>(film, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(film, HttpStatus.OK);
     }
 }

@@ -54,17 +54,19 @@ public class UserService {
         return userStorage.getUsers().values();
     }
 
-    public ResponseEntity<User> create(User user) {
+    public User create(User user) {
         userStorage.create(user);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return user;
     }
 
-    public ResponseEntity<User> update(User user) {
+    public User update(User user) {
         if (userStorage.update(user)) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            return user;
+            //return new ResponseEntity<>(user, HttpStatus.OK);
         }
         log.debug("Пользователь с id: {} не найден", user.getId());
-        return new ResponseEntity<>(user, HttpStatus.NOT_FOUND);
+        return null;
+
     }
 
     public User getUserById(Integer id) {

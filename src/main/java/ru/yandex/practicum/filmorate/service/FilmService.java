@@ -26,9 +26,9 @@ public class FilmService {
         this.userStorage = inMemoryUserStorage;
     }
 
-    public ResponseEntity<Film> getFilmById(Integer id) {
+    public Film getFilmById(Integer id) {
         filmStorage.validationId(id);
-        return new ResponseEntity<>(filmStorage.getFilms().get(id), HttpStatus.OK);
+        return filmStorage.getFilms().get(id);
     }
 
     public List<Film> findAll(Integer count) {
@@ -53,18 +53,17 @@ public class FilmService {
         return filmStorage.getFilms().values();
     }
 
-    public ResponseEntity<Film> create(Film film) {
+    public Film create(Film film) {
         filmStorage.create(film);
-        return new ResponseEntity<>(film, HttpStatus.OK);
+        return film;
     }
 
-    public ResponseEntity<Film> update(Film film) {
-
+    public Film update(Film film) {
         if (filmStorage.update(film)) {
-            return new ResponseEntity<>(film, HttpStatus.OK);
+            return film;
         }
         log.debug("Фильм с id: {} не найден", film.getId());
-        return new ResponseEntity<>(film, HttpStatus.NOT_FOUND);
+        return null;
     }
 
     static class FilmLikesComparator implements Comparator<Film> {

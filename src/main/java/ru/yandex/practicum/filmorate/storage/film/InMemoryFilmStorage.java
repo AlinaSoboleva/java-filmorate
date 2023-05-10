@@ -23,9 +23,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public boolean update(Film film) {
-        if (film.getId() == 0) {
-            film.setId(getId());
-        }
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
             return true;

@@ -39,9 +39,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public boolean update(User user) {
-        if (user.getId() == 0) {
-            user.setId(getId());
-        }
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
             return true;

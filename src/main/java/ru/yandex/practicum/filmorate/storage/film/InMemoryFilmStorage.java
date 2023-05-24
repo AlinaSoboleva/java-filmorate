@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.film.Film;
 
 import java.util.HashMap;
 import java.util.Map;

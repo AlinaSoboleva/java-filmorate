@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.model.user;
 
 import lombok.Data;
 import lombok.NonNull;
@@ -30,12 +30,14 @@ public class User {
     @NonNull
     @Past(message = "Дата рождения не может быть в будущем времени")
     private LocalDate birthday;
+    private boolean friendshipStatus;
 
     public User(@NonNull String email, @NonNull String login, String name, @NonNull LocalDate birthday) {
         this.email = email;
         this.login = login;
         this.name = setName(name);
         this.birthday = birthday;
+        this.friendshipStatus = false;
     }
 
     private String setName(String name) {

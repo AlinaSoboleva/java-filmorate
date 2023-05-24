@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.model.film;
 
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validation.CheckReleaseDate;
@@ -21,6 +21,9 @@ public class Film {
     private final LocalDate releaseDate;
     @PositiveOrZero(message = "Продолжительность фильма не может быть отрицательной")
     private final int duration;
+    private  RatingMPA ratingMPA = RatingMPA.G;
+
+    private final Set<Genre> genres = new HashSet<>();
 
     private final Set<Integer> likes = new HashSet<>();
 }

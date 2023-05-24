@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.Exceptions.UserIdException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.user.User;
 
 import java.util.*;
 

@@ -38,10 +38,7 @@ public class FriendStorage {
         String sql = "select * from FRIENDS where USER_ID = ?";
         List<Friends> friends = jdbcTemplate.query(sql, (rs, rowNum) -> makeFollow(rs), userId);
 
-        List<User> friend = friends.stream()
-                .map(Friends::getFriendId)
-                .map(userStorage::getById)
-                .collect(Collectors.toList());
+        List<User> friend = friends.stream().map(Friends::getFriendId).map(userStorage::getById).collect(Collectors.toList());
 
         if (friend.isEmpty()) {
             return Collections.emptyList();
@@ -64,11 +61,10 @@ public class FriendStorage {
         userStorage.validationId(id);
         userStorage.validationId(friendId);
         String sql = "MERGE INTO FRIENDS KEY (USER_ID, FRIEND_ID, FRIENDS_STATUS) VALUES ( ?, ?, ? )";
-        jdbcTemplate.update(sql,
-                id, friendId, false);
+        jdbcTemplate.update(sql, id, friendId, false);
         if (checkFriends(id, friendId)) {
-            jdbcTemplate.update("UPDATE FRIENDS SET FRIENDS_STATUS=true WHERE USER_ID IN (?,?) AND FRIEND_ID IN (?, ?)"
-                    , id, friendId, friendId, id);
+            jdbcTemplate.update("UPDATE FRIENDS SET FRIENDS_STATUS=true " +
+                    "WHERE USER_ID IN (?,?) AND FRIEND_ID IN (?, ?)", id, friendId, friendId, id);
             log.info("Статус дружбы пользователей {} и {} = true", id, friendId);
         }
     }
@@ -78,9 +74,7 @@ public class FriendStorage {
         SqlRowSet resultSet = jdbcTemplate.queryForRowSet(sql, userId, friendId, friendId, userId);
         if (resultSet.next()) {
             int result = resultSet.getInt("COUNT(*)");
-            if (result == 2) {
-                return true;
-            }
+            return result == 2;
         }
         return false;
     }

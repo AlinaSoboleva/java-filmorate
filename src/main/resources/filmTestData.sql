@@ -1,0 +1,13 @@
+insert into RATING (NAME)
+values('G'),('PG'),('PG-13'), ('R'),('NC-17');
+
+insert into GENRES (name)
+values ('Комедия'),('Драма'),('Мультфильм'),('Триллер'),('Документальный'),('Боевик');
+
+INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) VALUES ('FILM','DES', '2022-01-01',100,1 );
+INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) VALUES ('FILM2','DES', '2022-01-01',100,2 );
+INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) VALUES ('FILM3','DES', '2022-01-01',100,3 );
+
+INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) VALUES ('em@mail.ru','user','name','2020-01-01' );
+INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) VALUES ('email@mail.ru','user2','name','2020-01-01' );
+

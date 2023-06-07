@@ -21,10 +21,13 @@ public class Film {
     private final LocalDate releaseDate;
     @PositiveOrZero(message = "Продолжительность фильма не может быть отрицательной")
     private final int duration;
-    private  RatingMPA ratingMPA = RatingMPA.G;
+
+    private Mpa mpa = new Mpa(1, "G");
+
+    private int rate = 0;
 
     private final Set<Genre> genres = new HashSet<>();
 
-    private final Set<Integer> likes = new HashSet<>();
+
 }
 

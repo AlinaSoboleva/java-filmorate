@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.Collection;
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -37,14 +36,14 @@ public class FilmController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Film> getFilmById(@PathVariable Integer id) {
-        return new ResponseEntity<>(filmService.getFilmById(id), HttpStatus.OK);
+        return new ResponseEntity<>(filmService.getById(id), HttpStatus.OK);
     }
 
     @GetMapping("/popular")
-    public List<Film> findAll(
+    public Collection<Film> findAll(
             @RequestParam(value = "count", defaultValue = "10", required = false)
             @Positive(message = "Некорректное значение count") Integer count) {
-        return filmService.findAll(count);
+        return filmService.findAllTopFilms(count);
     }
 
     @GetMapping
@@ -60,7 +59,7 @@ public class FilmController {
     @PutMapping
     public ResponseEntity<Film> update(@Valid @RequestBody Film film) {
         Film updatedFilm = filmService.update(film);
-        if (updatedFilm == null){
+        if (updatedFilm == null) {
             return new ResponseEntity<>(film, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(film, HttpStatus.OK);

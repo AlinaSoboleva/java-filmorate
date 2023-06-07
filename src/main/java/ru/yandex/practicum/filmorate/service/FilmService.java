@@ -3,52 +3,54 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.storage.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class FilmService {
+
     private final FilmStorage filmStorage;
+
     private final UserStorage userStorage;
 
-    public FilmService(InMemoryFilmStorage inMemoryFilmStorage, InMemoryUserStorage inMemoryUserStorage) {
-        this.filmStorage = inMemoryFilmStorage;
-        this.userStorage = inMemoryUserStorage;
+    private final LikeStorage likeStorage;
+
+    public FilmService(FilmDbStorage filmStorage, UserDbStorage userStorage, LikeStorage likeStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+        this.likeStorage = likeStorage;
     }
 
-    public Film getFilmById(Integer id) {
+    public Film getById(Integer id) {
         filmStorage.validationId(id);
-        return filmStorage.getFilms().get(id);
+        return filmStorage.getById(id);
     }
 
-    public List<Film> findAll(Integer count) {
-        List<Film> films = filmStorage.getFilms().values().stream().sorted(new FilmLikesComparator()).collect(Collectors.toList());
-        return films.stream().limit(count).collect(Collectors.toList());
+    public Collection<Film> findAllTopFilms(Integer count) {
+        return filmStorage.findAllTopFilms(count);
     }
 
-    public void deleteLike(Integer id, Integer userId) {
-        filmStorage.validationId(id);
+    public void deleteLike(Integer filmId, Integer userId) {
+        filmStorage.validationId(filmId);
         userStorage.validationId(userId);
-        filmStorage.getFilms().get(id).getLikes().remove(userId);
+        likeStorage.deleteLike(filmId, userId);
     }
 
-    public void putLike(Integer id, Integer userId) {
+    public void putLike(Integer filmId, Integer userId) {
         userStorage.validationId(userId);
-        filmStorage.validationId(id);
-        filmStorage.getFilms().get(id).getLikes().add(userId);
+        filmStorage.validationId(filmId);
+        likeStorage.putLike(filmId, userId);
     }
 
     public Collection<Film> findAll() {
         log.debug("Текущее количество фильмов: {}", filmStorage.getFilms().size());
-        return filmStorage.getFilms().values();
+        return filmStorage.getFilms();
     }
 
     public Film create(Film film) {
@@ -64,11 +66,5 @@ public class FilmService {
         return null;
     }
 
-    static class FilmLikesComparator implements Comparator<Film> {
 
-        @Override
-        public int compare(Film o1, Film o2) {
-            return o2.getLikes().size() - o1.getLikes().size();
-        }
-    }
 }

@@ -34,6 +34,7 @@ public class FriendStorage implements FriendDao {
         jdbcTemplate.update(sql, id, friendId);
         log.info("Пользователь с id {} удаляет пользователя с id {}", id, friendId);
     }
+
     @Override
     public List<User> getFriendsList(Integer userId) {
         userStorage.validationId(userId);

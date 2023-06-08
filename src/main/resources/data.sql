@@ -1,6 +1,6 @@
-insert into RATING (NAME)
-values('G'),('PG'),('PG-13'), ('R'),('NC-17');
+INSERT INTO RATING (NAME)
+VALUES('G'),('PG'),('PG-13'), ('R'),('NC-17');
 
-insert into GENRES (name)
-values ('Комедия'),('Драма'),('Мультфильм'),('Триллер'),('Документальный'),('Боевик');
+INSERT INTO GENRES (name)
+VALUES ('Комедия'),('Драма'),('Мультфильм'),('Триллер'),('Документальный'),('Боевик');
 

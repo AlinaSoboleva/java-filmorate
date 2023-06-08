@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.storage.film.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
@@ -11,10 +13,12 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.GenreDao;
 import ru.yandex.practicum.filmorate.storage.film.MpaDao;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 @Slf4j
@@ -25,7 +29,6 @@ public class FilmDbStorage implements FilmStorage {
     private final MpaDao mpaStorage;
 
     private final GenreDao genreStorage;
-    private int id;
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, GenreStorage genreStorage) {
         this.jdbcTemplate = jdbcTemplate;
@@ -43,17 +46,27 @@ public class FilmDbStorage implements FilmStorage {
     public void create(Film film) {
         log.info("Сохранение фильма {}", film);
         if (film.getId() == 0) {
-            film.setId(getId());
+            KeyHolder holder = new GeneratedKeyHolder();
             film.setMpa(mpaStorage.getById(film.getMpa().getId()));
             String sql = "INSERT INTO FILMS(NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) " + "VALUES (?, ?, ?, ?,?)";
-            jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
+
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"FILM_ID"});
+                ps.setString(1, film.getName());
+                ps.setString(2, film.getDescription());
+                ps.setString(3, film.getReleaseDate().toString());
+                ps.setInt(4, film.getDuration());
+                ps.setInt(5, film.getMpa().getId());
+                return ps;
+            }, holder);
+
+            film.setId(Objects.requireNonNull(holder.getKey()).intValue());
             Set<Genre> genres = film.getGenres();
             for (Genre genre : genres) {
                 film.getGenres().remove(genre);
                 film.getGenres().add(genreStorage.getById(genre.getId()));
                 genreStorage.createGenreByFilm(genre.getId(), film.getId());
             }
-
             log.info("Фильм   {} сохранен", film);
         }
     }
@@ -127,9 +140,5 @@ public class FilmDbStorage implements FilmStorage {
     private void setGenre(Film film) {
         film.getGenres().clear();
         film.getGenres().addAll(genreStorage.getGenresByFilm(film.getId()));
-    }
-
-    private int getId() {
-        return ++id;
     }
 }

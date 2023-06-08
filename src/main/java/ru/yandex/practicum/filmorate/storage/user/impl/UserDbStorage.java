@@ -2,24 +2,26 @@ package ru.yandex.practicum.filmorate.storage.user.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Objects;
 
 @Slf4j
 @Component
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
-    private int id;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -29,9 +31,19 @@ public class UserDbStorage implements UserStorage {
     public void create(User user) {
         log.info("Сохранение пользователя {}", user);
         if (user.getId() == 0) {
-            user.setId(getId());
+            KeyHolder holder = new GeneratedKeyHolder();
             String sql = "INSERT INTO USERS(EMAIL, LOGIN, NAME, BIRTHDAY) " + "VALUES (?, ?, ?, ?)";
-            jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
+
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"USER_ID"});
+                ps.setString(1, user.getEmail());
+                ps.setString(2, user.getLogin());
+                ps.setString(3, user.getName());
+                ps.setString(4, user.getBirthday().toString());
+                return ps;
+            }, holder);
+
+            user.setId(Objects.requireNonNull(holder.getKey()).intValue());
             log.info("Пользователь {}  сохранен", user);
         }
     }
@@ -88,9 +100,5 @@ public class UserDbStorage implements UserStorage {
         User user = new User(email, login, name, birthday);
         user.setId(id);
         return user;
-    }
-
-    private int getId() {
-        return ++id;
     }
 }

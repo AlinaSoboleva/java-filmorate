@@ -24,7 +24,7 @@ public class Film {
 
     private Mpa mpa;
 
-    private int rate = 0;
+    private int rate;
 
     private final Set<Genre> genres = new HashSet<>();
 

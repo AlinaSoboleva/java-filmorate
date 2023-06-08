@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.impl.FilmServiceImpl;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -18,19 +19,17 @@ public class FilmController {
 
     private final FilmService filmService;
 
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmServiceImpl filmService) {
         this.filmService = filmService;
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void putLike(@PathVariable Integer id,
-                        @PathVariable Integer userId) {
+    public void putLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.putLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@PathVariable Integer id,
-                           @PathVariable Integer userId) {
+    public void deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.deleteLike(id, userId);
     }
 
@@ -40,9 +39,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> findAll(
-            @RequestParam(value = "count", defaultValue = "10", required = false)
-            @Positive(message = "Некорректное значение count") Integer count) {
+    public Collection<Film> findAll(@RequestParam(value = "count", defaultValue = "10", required = false) @Positive(message = "Некорректное значение count") Integer count) {
         return filmService.findAllTopFilms(count);
     }
 

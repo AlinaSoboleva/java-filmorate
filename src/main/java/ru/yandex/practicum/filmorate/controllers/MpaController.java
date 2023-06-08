@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.film.Mpa;
 import ru.yandex.practicum.filmorate.service.MpaService;
+import ru.yandex.practicum.filmorate.service.impl.MpaServiceImpl;
 
 import java.util.Collection;
 
@@ -17,7 +18,7 @@ public class MpaController {
 
     private final MpaService mpaService;
 
-    public MpaController(MpaService mpaService) {
+    public MpaController(MpaServiceImpl mpaService) {
         this.mpaService = mpaService;
     }
 

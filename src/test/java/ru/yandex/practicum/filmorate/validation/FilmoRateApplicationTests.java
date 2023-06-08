@@ -107,6 +107,7 @@ class FilmoRateApplicationTests {
     @DisplayName("Сохранине фильма в базе данных c последующим удалением")
     public void testCreateAndDeleteFilm() {
         Film film = new Film("newFilm", "des", LocalDate.of(2002, 3, 4), 100);
+        film.setMpa(new Mpa(1,"G"));
         filmStorage.create(film);
         List<Film> films = (List<Film>) filmStorage.getFilms();
 
@@ -125,6 +126,7 @@ class FilmoRateApplicationTests {
     public void testUpdateFilm() {
         Film film = new Film("newFilm", "newDesc", LocalDate.of(2002, 3, 4), 100);
         film.setId(1);
+        film.setMpa(new Mpa(1,"G"));
         filmStorage.update(film);
         List<Film> films = (List<Film>) filmStorage.getFilms();
 

@@ -22,7 +22,7 @@ public class Film {
     @PositiveOrZero(message = "Продолжительность фильма не может быть отрицательной")
     private final int duration;
 
-    private Mpa mpa = new Mpa(1, "G");
+    private Mpa mpa;
 
     private int rate = 0;
 

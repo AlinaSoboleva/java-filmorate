@@ -1,22 +1,21 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.storage.user.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.user.User;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
 
+@Slf4j
 @Component
 public class UserDbStorage implements UserStorage {
-
-    private final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -31,13 +30,8 @@ public class UserDbStorage implements UserStorage {
         log.info("Сохранение пользователя {}", user);
         if (user.getId() == 0) {
             user.setId(getId());
-            String sql = "INSERT INTO USERS(EMAIL, LOGIN, NAME, BIRTHDAY) " +
-                    "VALUES (?, ?, ?, ?)";
-            jdbcTemplate.update(sql,
-                    user.getEmail(),
-                    user.getLogin(),
-                    user.getName(),
-                    user.getBirthday());
+            String sql = "INSERT INTO USERS(EMAIL, LOGIN, NAME, BIRTHDAY) " + "VALUES (?, ?, ?, ?)";
+            jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
             log.info("Пользователь {}  сохранен", user);
         }
     }
@@ -49,14 +43,8 @@ public class UserDbStorage implements UserStorage {
         } catch (UserIdException e) {
             return false;
         }
-        String sql = "UPDATE USERS SET  EMAIL = ?, LOGIN = ?, NAME = ?,BIRTHDAY= ?" +
-                "WHERE USER_ID = ?;";
-        jdbcTemplate.update(sql,
-                user.getEmail(),
-                user.getLogin(),
-                user.getName(),
-                user.getBirthday(),
-                user.getId());
+        String sql = "UPDATE USERS SET  EMAIL = ?, LOGIN = ?, NAME = ?,BIRTHDAY= ?" + "WHERE USER_ID = ?;";
+        jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
         return true;
     }
 
@@ -70,13 +58,13 @@ public class UserDbStorage implements UserStorage {
     public User getById(Integer id) {
         validationId(id);
         String sql = "SELECT * FROM USERS WHERE USER_ID = ?";
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs, rowNum)), id).get(0);
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), id).get(0);
     }
 
     @Override
     public Collection<User> getUsers() {
         String sql = "SELECT * FROM USERS";
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs, rowNum)));
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)));
     }
 
     @Override
@@ -91,7 +79,7 @@ public class UserDbStorage implements UserStorage {
 
     }
 
-    private User makeUser(ResultSet resultSet, int RowNum) throws SQLException {
+    private User makeUser(ResultSet resultSet) throws SQLException {
         int id = resultSet.getInt("user_id");
         String email = resultSet.getString("email");
         String login = resultSet.getString("login");

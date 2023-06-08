@@ -28,6 +28,5 @@ public class Film {
 
     private final Set<Genre> genres = new HashSet<>();
 
-
 }
 

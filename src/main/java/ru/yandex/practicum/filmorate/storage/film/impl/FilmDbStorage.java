@@ -1,29 +1,30 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.storage.film.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.Genre;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.GenreDao;
+import ru.yandex.practicum.filmorate.storage.film.MpaDao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 @Component
 public class FilmDbStorage implements FilmStorage {
 
-    private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
     private final JdbcTemplate jdbcTemplate;
-    private final MpaStorage mpaStorage;
+    private final MpaDao mpaStorage;
 
-    private final GenreStorage genreStorage;
+    private final GenreDao genreStorage;
     private int id;
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, GenreStorage genreStorage) {
@@ -34,10 +35,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> findAllTopFilms(Integer count) {
-        String sql = "SELECT * FROM FILMS LEFT JOIN  LIKES L on FILMS.FILM_ID = L.FILM_ID " +
-                "GROUP BY FILMS.FILM_ID ORDER BY COUNT(L.FILM_ID) DESC LIMIT ?";
-        Collection<Film> films = jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), count);
-        return films;
+        String sql = "SELECT * FROM FILMS LEFT JOIN  LIKES L on FILMS.FILM_ID = L.FILM_ID " + "GROUP BY FILMS.FILM_ID ORDER BY COUNT(L.FILM_ID) DESC LIMIT ?";
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), count);
     }
 
     @Override
@@ -46,15 +45,8 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getId() == 0) {
             film.setId(getId());
             film.setMpa(mpaStorage.getById(film.getMpa().getId()));
-            String sql = "INSERT INTO FILMS(NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) " +
-                    "VALUES (?, ?, ?, ?,?)";
-            jdbcTemplate.update(sql,
-                    film.getName(),
-                    film.getDescription(),
-                    film.getReleaseDate(),
-                    film.getDuration(),
-                    film.getMpa().getId()
-            );
+            String sql = "INSERT INTO FILMS(NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) " + "VALUES (?, ?, ?, ?,?)";
+            jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
             Set<Genre> genres = film.getGenres();
             for (Genre genre : genres) {
                 film.getGenres().remove(genre);
@@ -73,26 +65,14 @@ public class FilmDbStorage implements FilmStorage {
         } catch (FilmIdException e) {
             return false;
         }
-        String sql = "UPDATE FILMS SET  NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?,DURATION=?,RATING_ID=?" +
-                "                WHERE FILM_ID = ?;";
-        jdbcTemplate.update(sql,
-                film.getName(),
-                film.getDescription(),
-                film.getReleaseDate(),
-                film.getDuration(),
-                film.getMpa().getId(),
-                film.getId());
+        String sql = "UPDATE FILMS SET  NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?,DURATION=?,RATING_ID=?" + "                WHERE FILM_ID = ?;";
+        jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
         setMpa(film, film.getMpa().getId());
         Set<Genre> genres = film.getGenres();
-        Set<Genre> newGenres = new HashSet<>();
         genreStorage.deleteAllGenresByFilm(film.getId());
         for (Genre genre : genres) {
-            newGenres.add(genreStorage.getById(genre.getId()));
             genreStorage.createGenreByFilm(genre.getId(), film.getId());
         }
-        genres.clear();
-        genres.addAll(newGenres);
-
         return true;
     }
 

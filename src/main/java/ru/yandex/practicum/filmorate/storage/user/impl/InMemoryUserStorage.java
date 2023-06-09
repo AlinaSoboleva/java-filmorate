@@ -1,31 +1,39 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.storage.user.impl;
 
-import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.Exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.user.User;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
 
-@Component
+@Component("inMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
 
-    @Getter
     private final Map<Integer, User> users = new HashMap<>();
     private int id = 0;
+
+    public List<User> getFriendsList(Set<Integer> friendsId) {
+        return getFriends(friendsId);
+    }
 
     public List<User> getFriends(Set<Integer> friendsId) {
         List<User> friends = new ArrayList<>();
         for (Integer id : friendsId) {
-            friends.add(getUsers().get(id));
+            friends.add(getById(id));
         }
         return friends;
     }
 
     @Override
+    public Collection<User> getUsers() {
+        return users.values();
+    }
+
+    @Override
     public void create(User user) {
-        for (User u : getUsers().values()) {
+        for (User u : getUsers()) {
             if (u.getEmail().equals(user.getEmail())) {
                 throw new UserAlreadyExistException(String.format(
                         "Пользователь с электронной почтой %s уже зарегистрирован.",

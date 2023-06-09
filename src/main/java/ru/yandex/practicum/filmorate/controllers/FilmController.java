@@ -6,11 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.impl.FilmServiceImpl;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.Collection;
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -19,32 +19,28 @@ public class FilmController {
 
     private final FilmService filmService;
 
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmServiceImpl filmService) {
         this.filmService = filmService;
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void putLike(@PathVariable Integer id,
-                        @PathVariable Integer userId) {
+    public void putLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.putLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@PathVariable Integer id,
-                           @PathVariable Integer userId) {
+    public void deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.deleteLike(id, userId);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Film> getFilmById(@PathVariable Integer id) {
-        return new ResponseEntity<>(filmService.getFilmById(id), HttpStatus.OK);
+        return new ResponseEntity<>(filmService.getById(id), HttpStatus.OK);
     }
 
     @GetMapping("/popular")
-    public List<Film> findAll(
-            @RequestParam(value = "count", defaultValue = "10", required = false)
-            @Positive(message = "Некорректное значение count") Integer count) {
-        return filmService.findAll(count);
+    public Collection<Film> findAll(@RequestParam(value = "count", defaultValue = "10", required = false) @Positive(message = "Некорректное значение count") Integer count) {
+        return filmService.findAllTopFilms(count);
     }
 
     @GetMapping
@@ -60,7 +56,7 @@ public class FilmController {
     @PutMapping
     public ResponseEntity<Film> update(@Valid @RequestBody Film film) {
         Film updatedFilm = filmService.update(film);
-        if (updatedFilm == null){
+        if (updatedFilm == null) {
             return new ResponseEntity<>(film, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(film, HttpStatus.OK);

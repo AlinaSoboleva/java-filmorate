@@ -1,19 +1,34 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.storage.film.impl;
 
-import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@Component
+@Component("inMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
 
-    @Getter
     private final Map<Integer, Film> films = new HashMap<>();
     private int id = 0;
+
+    @Override
+    public Collection<Film> getFilms() {
+        return films.values();
+    }
+
+    @Override
+    public Collection<Film> findAllTopFilms(Integer count) {
+        List<Film> films = getFilms().stream().sorted(new FilmLikesComparator()).collect(Collectors.toList());
+        return films.stream().limit(count).collect(Collectors.toList());
+    }
+
+    @Override
+    public Film getById(Integer id) {
+        return films.get(id);
+    }
 
     @Override
     public void create(Film film) {
@@ -42,6 +57,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void validationId(Integer id) {
         if (!films.containsKey(id)) {
             throw new FilmIdException(String.format("Фильм с id %s не существует", id));
+        }
+    }
+
+    static class FilmLikesComparator implements Comparator<Film> {
+
+        @Override
+        public int compare(Film o1, Film o2) {
+            return o2.getRate() - o1.getRate();
         }
     }
 }

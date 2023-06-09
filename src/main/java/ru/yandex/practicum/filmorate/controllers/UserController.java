@@ -4,7 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.user.User;
+import ru.yandex.practicum.filmorate.service.FriendsService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.impl.FriendsServiceImpl;
+import ru.yandex.practicum.filmorate.service.impl.UserServiceImpl;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -14,31 +17,31 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final FriendsService friendsService;
 
-    public UserController(UserService userService) {
+    public UserController(UserServiceImpl userService, FriendsServiceImpl friendsService) {
         this.userService = userService;
+        this.friendsService = friendsService;
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public void deleteFriend(@PathVariable Integer id,
-                             @PathVariable Integer friendId) {
-        userService.deleteFriend(id, friendId);
+    public void deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        friendsService.deleteFriend(id, friendId);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable("id") Integer id, @PathVariable("friendId") Integer friendId) {
-        userService.addFriend(id, friendId);
+        friendsService.addFriend(id, friendId);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getCommonFried(@PathVariable Integer id,
-                                     @PathVariable Integer otherId) {
-        return userService.getCommonFried(id, otherId);
+    public List<User> getCommonFried(@PathVariable Integer id, @PathVariable Integer otherId) {
+        return friendsService.getCommonFriends(id, otherId);
     }
 
     @GetMapping("/{id}/friends")
     public List<User> getFriends(@PathVariable Integer id) {
-        return userService.getFriendsList(userService.getUserById(id).getFriends());
+        return friendsService.getFriendsList(id);
     }
 
     @GetMapping("/{userId}")
@@ -59,9 +62,9 @@ public class UserController {
     @PutMapping
     public ResponseEntity<User> update(@Valid @RequestBody User user) {
         User updatedUser = userService.update(user);
-        if (updatedUser == null){
+        if (updatedUser == null) {
             return new ResponseEntity<>(user, HttpStatus.NOT_FOUND);
         }
-        return  new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

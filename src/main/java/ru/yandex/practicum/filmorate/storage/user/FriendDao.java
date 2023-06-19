@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface FriendDao {
 
-    void deleteFriend(Integer id, Integer friendId);
+    int deleteFriend(Integer id, Integer friendId);
 
     List<User> getFriendsList(Integer userId);
 

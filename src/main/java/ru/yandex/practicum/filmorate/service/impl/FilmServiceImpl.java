@@ -2,7 +2,10 @@ package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.feed.EventOperation;
+import ru.yandex.practicum.filmorate.model.feed.EventType;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.service.EventFeedService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.impl.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.film.impl.FilmDbStorage;
@@ -21,11 +24,16 @@ public class FilmServiceImpl implements FilmService {
     private final UserStorage userStorage;
 
     private final LikeStorage likeStorage;
+    private final EventFeedService eventFeedService;
 
-    public FilmServiceImpl(FilmDbStorage filmStorage, UserDbStorage userStorage, LikeStorage likeStorage) {
+    public FilmServiceImpl(FilmDbStorage filmStorage,
+                           UserDbStorage userStorage,
+                           LikeStorage likeStorage,
+                           EventFeedService eventFeedService) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.likeStorage = likeStorage;
+        this.eventFeedService = eventFeedService;
     }
 
     @Override
@@ -44,6 +52,10 @@ public class FilmServiceImpl implements FilmService {
         filmStorage.validationId(filmId);
         userStorage.validationId(userId);
         likeStorage.deleteLike(filmId, userId);
+        eventFeedService.saveEvent(EventType.LIKE,
+                EventOperation.REMOVE,
+                userId,
+                filmId);
     }
 
     @Override
@@ -51,6 +63,10 @@ public class FilmServiceImpl implements FilmService {
         userStorage.validationId(userId);
         filmStorage.validationId(filmId);
         likeStorage.putLike(filmId, userId);
+        eventFeedService.saveEvent(EventType.LIKE,
+                EventOperation.ADD,
+                userId,
+                filmId);
     }
 
     @Override

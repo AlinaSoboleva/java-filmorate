@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import ru.yandex.practicum.filmorate.model.film.Film;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface FilmStorage {
     void create(Film film);
@@ -18,4 +19,6 @@ public interface FilmStorage {
     Film getById(Integer id);
 
     Collection<Film> findAllTopFilms(Integer count);
+
+    Collection<Film> search(String query, List<String> by);
 }

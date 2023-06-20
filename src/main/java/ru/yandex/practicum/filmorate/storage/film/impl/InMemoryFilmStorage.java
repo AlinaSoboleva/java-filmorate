@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component("inMemoryFilmStorage")
+/*@Component("inMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Integer, Film> films = new HashMap<>();
@@ -67,4 +67,4 @@ public class InMemoryFilmStorage implements FilmStorage {
             return o2.getRate() - o1.getRate();
         }
     }
-}
+}*/

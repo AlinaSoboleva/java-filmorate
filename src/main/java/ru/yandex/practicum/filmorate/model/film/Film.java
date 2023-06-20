@@ -8,6 +8,7 @@ import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -28,5 +29,5 @@ public class Film {
 
     private final Set<Genre> genres = new HashSet<>();
 
+    private List<Director> directors;
 }
-

@@ -1,13 +1,13 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.impl.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.film.impl.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.impl.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -21,12 +21,10 @@ public class FilmServiceImpl implements FilmService {
 
     private final UserStorage userStorage;
 
-    private final FilmLikeStorage likeStorage;
+    private final LikeStorage likeStorage;
     private final DirectorStorage directorStorage;
 
-    public FilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage,
-                           UserDbStorage userStorage,
-                           FilmLikeStorage likeStorage,  DirectorStorage directorStorage) {
+    public FilmServiceImpl(FilmDbStorage filmStorage, UserDbStorage userStorage, LikeStorage likeStorage, DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.likeStorage = likeStorage;
@@ -80,29 +78,8 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getRecommendations(Integer id) {
-        log.debug("Получены рекомендации фильмов по id: {}", id);
-        return filmStorage.getRecommendations(id);
-    }
-
-    @Override
-    public void deleteFilm(Integer filmId) {
-        filmStorage.delete(filmId);
-    }
-
-    @Override
-    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
-        return filmStorage.getCommonFilms(userId, friendId);
-    }
-
-    @Override
     public Collection<Film> getFilmsByDirectorId(int id, String sortBy) {
         directorStorage.validationId(id);
         return filmStorage.getFilmsByDirectorId(id, sortBy);
-    }
-
-    @Override
-    public List<Film> search(String query, String by) {
-        return filmStorage.search(query, by);
     }
 }

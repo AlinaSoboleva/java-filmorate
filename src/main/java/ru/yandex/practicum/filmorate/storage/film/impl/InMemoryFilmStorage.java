@@ -26,6 +26,15 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsLikedByUser(Integer userId) {
+        return getFilms()
+                .stream()
+                .filter(f -> f.getId() == userId)
+                .sorted(new FilmLikesComparator())
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Film getById(Integer id) {
         return films.get(id);
     }

@@ -1,16 +1,16 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.impl.LikeStorage;
-import ru.yandex.practicum.filmorate.storage.film.impl.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Collection;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -22,7 +22,9 @@ public class FilmServiceImpl implements FilmService {
 
     private final LikeStorage likeStorage;
 
-    public FilmServiceImpl(FilmDbStorage filmStorage, UserDbStorage userStorage, LikeStorage likeStorage) {
+    public FilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                           UserDbStorage userStorage,
+                           LikeStorage likeStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.likeStorage = likeStorage;
@@ -72,5 +74,12 @@ public class FilmServiceImpl implements FilmService {
         }
         log.debug("Фильм с id: {} не найден", film.getId());
         return null;
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        Set<Film> result = new LinkedHashSet<>(filmStorage.getFilmsLikedByUser(userId));
+        result.retainAll(filmStorage.getFilmsLikedByUser(friendId));
+        return new ArrayList<>(result);
     }
 }

@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.film.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
+import ru.yandex.practicum.filmorate.Exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -18,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -27,7 +30,6 @@ public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final MpaDao mpaStorage;
-
     private final GenreDao genreStorage;
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, GenreStorage genreStorage) {
@@ -40,6 +42,39 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> findAllTopFilms(Integer count) {
         String sql = "SELECT * FROM FILMS LEFT JOIN  LIKES L on FILMS.FILM_ID = L.FILM_ID " + "GROUP BY FILMS.FILM_ID ORDER BY COUNT(L.FILM_ID) DESC LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), count);
+    }
+
+    @Override
+    public List<Film> getFilmsLikedByUser(Integer userId) {
+
+        String sql = "SELECT f.film_id, " +
+                            "f.name, " +
+                            "f.description, " +
+                            "f.release_date, " +
+                            "f.duration, " +
+                            "f.rating_id, " +
+                            "COUNT(l.film_id) l_cnt " +
+                            "FROM FILMS f " +
+                            "LEFT JOIN LIKES l ON l.film_id = f.film_id " +
+                            "WHERE l.user_id = ? " +
+                            "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
+                            "ORDER BY l_cnt DESC";
+        log.info(
+                "Executing SQL query=[{}] to retrieve films liked by user with id={}",
+                sql,
+                userId
+        );
+        try {
+            List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId);
+            log.info("Retrieved films from DB liked by user with id={}: {}", userId, films);
+            return films;
+        } catch (DataIntegrityViolationException ex) {
+            String msg = String.format(
+                    "User with id=%d not found in DB.",
+                    userId
+            );
+            throw new UserIdException(msg);
+        }
     }
 
     @Override

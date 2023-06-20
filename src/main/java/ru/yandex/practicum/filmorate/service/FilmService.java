@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import ru.yandex.practicum.filmorate.model.film.Film;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface FilmService {
 
@@ -21,5 +20,5 @@ public interface FilmService {
 
     Film update(Film film);
 
-    Collection<Film> search(String query, List<String> by);
+    Collection<Film> search(String query, String by);
 }

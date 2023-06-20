@@ -18,7 +18,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -44,8 +43,29 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> search(String query, List<String> by) {
-        return null;
+    public Collection<Film> search(String query, String by) {
+        StringBuilder sql = new StringBuilder("SELECT *\n" +
+                "FROM FILMS F\n" +
+                "LEFT JOIN LIKES L ON F.FILM_ID=L.FILM_ID\n" +
+                "LEFT JOIN FILM_DIRECTOR FD ON F.FILM_ID=FD.FILM_ID\n" +
+                "LEFT JOIN DIRECTORS D ON FD.DIRECTOR_ID=D.DIRECTOR_ID\n");
+        switch (by) {
+            case ("title"):
+                sql.append("WHERE F.NAME LIKE CONCAT('%',?,'%')\n");
+                break;
+            case ("director"):
+                sql.append("WHERE D.NAME LIKE CONCAT('%',?,'%')\n");
+                break;
+            case ("title,director"):
+                sql.append("WHERE F.NAME LIKE CONCAT('%',?1,'%') OR D.NAME LIKE CONCAT('%',?1,'%')\n");
+                break;
+            case ("director,title"):
+                sql.append("WHERE D.NAME LIKE CONCAT('%',?1,'%') OR F.NAME LIKE CONCAT('%',?1,'%')\n");
+                break;
+        }
+        sql.append("GROUP BY F.FILM_ID\n" + "ORDER BY COUNT(L.FILM_ID) DESC\n");
+        System.out.println(sql);
+        return jdbcTemplate.query(sql.toString(), ((rs, rowNum) -> makeFilm(rs)), query);
     }
 
     @Override

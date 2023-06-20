@@ -26,6 +26,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getRecommendations(Integer id) {
+        return null;
+    }
+
+    @Override
     public Film getById(Integer id) {
         return films.get(id);
     }

@@ -17,9 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -40,6 +38,17 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> findAllTopFilms(Integer count) {
         String sql = "SELECT * FROM FILMS LEFT JOIN  LIKES L on FILMS.FILM_ID = L.FILM_ID " + "GROUP BY FILMS.FILM_ID ORDER BY COUNT(L.FILM_ID) DESC LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), count);
+    }
+
+    @Override
+    public List<Film> getRecommendations(Integer id) {
+        /*  1.Найти пользователей с максимальным количеством пересечения по лайкам.
+            2.Определить фильмы, которые один пролайкал, а другой нет.
+            3.Рекомендовать фильмы, которым поставил лайк пользователь с похожими вкусами, а тот, для кого составляется рекомендация, ещё не поставил.*/
+
+        List<Film> recommendationFilms = new ArrayList<>();
+
+        return recommendationFilms;
     }
 
     @Override

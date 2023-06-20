@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class Review {
-    int reviewId;
-    String content;
-    boolean isPositive;
-    int userId;
-    int filmId;
-    int useful;
+    private int reviewId;
+    private String content;
+    private boolean isPositive;
+    private int userId;
+    private int filmId;
+    private int useful;
 }

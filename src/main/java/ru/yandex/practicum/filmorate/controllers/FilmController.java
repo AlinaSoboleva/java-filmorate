@@ -61,4 +61,9 @@ public class FilmController {
         }
         return new ResponseEntity<>(film, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{filmId}")
+    public void deleteFilm(@PathVariable("filmId") Integer filmId) {
+        filmService.deleteFilm(filmId);
+    }
 }

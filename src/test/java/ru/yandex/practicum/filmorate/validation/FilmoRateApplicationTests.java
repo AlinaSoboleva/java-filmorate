@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
+import ru.yandex.practicum.filmorate.BaseTest;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.Genre;
 import ru.yandex.practicum.filmorate.model.film.Mpa;
@@ -21,12 +19,8 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest
-@AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Sql(scripts = {"/schema.sql", "/filmTestData.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/dropAll.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-class FilmoRateApplicationTests {
+class FilmoRateApplicationTests extends BaseTest {
     private final UserDbStorage userStorage;
     private final FilmDbStorage filmStorage;
     private final MpaStorage mpaStorage;
@@ -63,7 +57,7 @@ class FilmoRateApplicationTests {
         assertThat(users.size()).isEqualTo(3);
         assertThat(users.get(2)).hasFieldOrPropertyWithValue("email", "email@yandex.ru");
 
-        userStorage.delete(user);
+        userStorage.delete(user.getId());
 
         List<User> users2 = (List<User>) userStorage.getUsers();
 
@@ -114,7 +108,7 @@ class FilmoRateApplicationTests {
         assertThat(films.size()).isEqualTo(4);
         assertThat(films.get(3)).hasFieldOrPropertyWithValue("name", "newFilm");
 
-        filmStorage.delete(film);
+        filmStorage.delete(film.getId());
 
         List<Film> films2 = (List<Film>) filmStorage.getFilms();
 

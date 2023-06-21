@@ -9,7 +9,7 @@ public interface FilmStorage {
 
     boolean update(Film film);
 
-    void delete(Film film);
+    void delete(Integer filmId);
 
     void validationId(Integer id);
 

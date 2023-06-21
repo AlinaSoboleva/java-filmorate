@@ -17,9 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -38,7 +36,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> findAllTopFilms(Integer count) {
-        String sql = "SELECT * FROM FILMS LEFT JOIN  LIKES L on FILMS.FILM_ID = L.FILM_ID " + "GROUP BY FILMS.FILM_ID ORDER BY COUNT(L.FILM_ID) DESC LIMIT ?";
+        String sql = "SELECT FILMS.* FROM FILMS LEFT JOIN  LIKES L on FILMS.FILM_ID = L.FILM_ID " + "GROUP BY FILMS.FILM_ID ORDER BY COUNT(L.FILM_ID) DESC LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), count);
     }
 
@@ -62,11 +60,13 @@ public class FilmDbStorage implements FilmStorage {
 
             film.setId(Objects.requireNonNull(holder.getKey()).intValue());
             Set<Genre> genres = film.getGenres();
+            Set<Genre> newGenres = new HashSet<>();
             for (Genre genre : genres) {
-                film.getGenres().remove(genre);
-                film.getGenres().add(genreStorage.getById(genre.getId()));
+                newGenres.add(genreStorage.getById(genre.getId()));
                 genreStorage.createGenreByFilm(genre.getId(), film.getId());
             }
+            film.getGenres().clear();
+            film.getGenres().addAll(newGenres);
             log.info("Фильм   {} сохранен", film);
         }
     }
@@ -90,9 +90,9 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void delete(Film film) {
+    public void delete(Integer filmId) {
         String sql = "DELETE FROM FILMS WHERE FILM_ID=?";
-        jdbcTemplate.update(sql, film.getId());
+        jdbcTemplate.update(sql, filmId);
     }
 
     @Override

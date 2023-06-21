@@ -19,4 +19,6 @@ public interface FilmService {
     Film create(Film film);
 
     Film update(Film film);
+
+    void deleteFilm(Integer filmId);
 }

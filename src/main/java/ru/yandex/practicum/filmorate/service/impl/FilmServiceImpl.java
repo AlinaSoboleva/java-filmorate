@@ -73,4 +73,9 @@ public class FilmServiceImpl implements FilmService {
         log.debug("Фильм с id: {} не найден", film.getId());
         return null;
     }
+
+    @Override
+    public void deleteFilm(Integer filmId) {
+        filmStorage.delete(filmId);
+    }
 }

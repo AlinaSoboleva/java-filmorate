@@ -78,8 +78,6 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getCommonFilms(Integer userId, Integer friendId) {
-        Set<Film> result = new LinkedHashSet<>(filmStorage.getFilmsLikedByUser(userId));
-        result.retainAll(filmStorage.getFilmsLikedByUser(friendId));
-        return new ArrayList<>(result);
+        return filmStorage.getCommonFilms(userId, friendId);
     }
 }

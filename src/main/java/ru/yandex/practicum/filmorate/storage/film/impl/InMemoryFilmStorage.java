@@ -26,12 +26,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmsLikedByUser(Integer userId) {
-        return getFilms()
-                .stream()
-                .filter(f -> f.getId() == userId)
-                .sorted(new FilmLikesComparator())
-                .collect(Collectors.toList());
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        // stub
+        return Collections.emptyList();
     }
 
     @Override

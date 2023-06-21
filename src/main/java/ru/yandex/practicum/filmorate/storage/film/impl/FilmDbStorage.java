@@ -45,37 +45,48 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmsLikedByUser(Integer userId) {
-
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
         String sql = "SELECT f.film_id, " +
-                            "f.name, " +
-                            "f.description, " +
-                            "f.release_date, " +
-                            "f.duration, " +
-                            "f.rating_id, " +
-                            "COUNT(l.film_id) l_cnt " +
-                            "FROM FILMS f " +
-                            "LEFT JOIN LIKES l ON l.film_id = f.film_id " +
-                            "WHERE l.user_id = ? " +
-                            "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
-                            "ORDER BY l_cnt DESC";
+                "f.name, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "f.rating_id, " +
+                "COUNT(l.film_id) l_cnt " +
+                "FROM FILMS f " +
+                "LEFT JOIN LIKES l ON l.film_id = f.film_id " +
+                "WHERE f.film_id IN (" +
+                    "SELECT f.film_id film_id " +
+                    "FROM FILMS ff " +
+                    "LEFT JOIN LIKES ll ON ff.film_id = ll.film_id " +
+                    "WHERE ll.user_id = ? " +
+                    "INTERSECT " +
+                    "SELECT fff.film_id " +
+                    "FROM FILMS fff " +
+                    "LEFT JOIN LIKES lll ON fff.film_id = lll.film_id " +
+                    "WHERE lll.user_id = ?" +
+                ") " +
+                "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
+                "ORDER BY l_cnt DESC";
         log.info(
                 "Executing SQL query=[{}] to retrieve films liked by user with id={}",
                 sql,
                 userId
         );
         try {
-            List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId);
+            List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId, friendId);
             log.info("Retrieved films from DB liked by user with id={}: {}", userId, films);
             return films;
         } catch (DataIntegrityViolationException ex) {
             String msg = String.format(
-                    "User with id=%d not found in DB.",
-                    userId
+                    "Either user with id=%d or friend with id=%d not found in DB.",
+                    userId,
+                    friendId
             );
             throw new UserIdException(msg);
         }
     }
+
 
     @Override
     public void create(Film film) {

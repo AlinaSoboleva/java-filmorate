@@ -20,5 +20,5 @@ public interface FilmStorage {
 
     Collection<Film> findAllTopFilms(Integer count);
 
-    List<Film> getFilmsLikedByUser(Integer userId);
+    List<Film> getCommonFilms(Integer userId, Integer friendId);
 }

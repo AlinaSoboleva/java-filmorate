@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> findAllTopFilms(Integer count) {
+    public Collection<Film> findAllTopFilms(Integer count, Integer genreId, LocalDate year) {
         List<Film> films = getFilms().stream().sorted(new FilmLikesComparator()).collect(Collectors.toList());
         return films.stream().limit(count).collect(Collectors.toList());
     }

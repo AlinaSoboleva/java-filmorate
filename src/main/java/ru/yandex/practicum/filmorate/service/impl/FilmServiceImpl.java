@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 @Slf4j
@@ -35,8 +36,8 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public Collection<Film> findAllTopFilms(Integer count) {
-        return filmStorage.findAllTopFilms(count);
+    public Collection<Film> findAllTopFilms(Integer count, Integer genreId, LocalDate year) {
+        return filmStorage.findAllTopFilms(count, genreId, year);
     }
 
     @Override

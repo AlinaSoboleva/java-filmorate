@@ -2,13 +2,14 @@ package ru.yandex.practicum.filmorate.service;
 
 import ru.yandex.practicum.filmorate.model.film.Film;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 public interface FilmService {
 
     Film getById(Integer id);
 
-    Collection<Film> findAllTopFilms(Integer count);
+    Collection<Film> findAllTopFilms(Integer count, Integer genreId, LocalDate year);
 
     void deleteLike(Integer filmId, Integer userId);
 

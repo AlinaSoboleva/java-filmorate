@@ -37,8 +37,13 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> findAllTopFilms(Integer count) {
-        String sql = "SELECT * FROM FILMS LEFT JOIN  LIKES L on FILMS.FILM_ID = L.FILM_ID " + "GROUP BY FILMS.FILM_ID ORDER BY COUNT(L.FILM_ID) DESC LIMIT ?";
+    public Collection<Film> findAllTopFilms(Integer count, Integer genreId, LocalDate year) {
+        String sql = "SELECT *" +
+                "FROM FILMS LEFT JOIN LIKES L on FILMS.FILM_ID = L.FILM_ID " +
+                "FROM FILMS LEFT JOIN FILM_GENRE FG on FILMS.FILM_ID = FG.FILM_ID " +
+                "WHERE genre_id = ? and release_date = ?" +
+                "or genre_id = ? or release_date = ?" +
+                "GROUP BY FILMS.FILM_ID ORDER BY COUNT(L.FILM_ID) DESC LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), count);
     }
 

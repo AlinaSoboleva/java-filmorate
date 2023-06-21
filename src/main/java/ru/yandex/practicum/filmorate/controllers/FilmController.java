@@ -41,8 +41,13 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> findAll(@RequestParam(value = "count", defaultValue = "10", required = false) @Positive(message = "Некорректное значение count") Integer count) {
-        return filmService.findAllTopFilms(count);
+    public Collection<Film> findAll(@RequestParam(value = "count", defaultValue = "10", required = false)
+                                    @Positive(message = "Некорректное значение count") Integer count,
+                                    @RequestParam(value = "genreId", defaultValue = "null", required = false)
+                                    @Positive(message = "Некорректное значение count") Integer genreId,
+                                    @RequestParam(value = "year", defaultValue = "null", required = false)
+                                    @DateTimeFormat(pattern = "yyyy") LocalDate year) {
+        return filmService.findAllTopFilms(count, genreId, year);
     }
 
     @GetMapping
@@ -64,7 +69,7 @@ public class FilmController {
         return new ResponseEntity<>(film, HttpStatus.OK);
     }
 
-    @GetMapping("/popular")
+    /*@GetMapping("/popular")
     public Collection<Film> getMostPopularsFilms(@RequestParam
                                                  @Positive(message = "Некорректное значение count") Integer count,
                                                  @RequestParam
@@ -72,5 +77,5 @@ public class FilmController {
                                                  @RequestParam
                                                  @DateTimeFormat(pattern = "yyyy") LocalDate year) {
         return filmService.getMostPopularsFilms(count, genreId, year);
-    }
+    }*/
 }

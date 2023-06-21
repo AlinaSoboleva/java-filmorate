@@ -181,6 +181,6 @@ class FilmoRateApplicationTests {
         List<Film> films = filmStorage.getRecommendations(1);
 
         assertThat(films.size()).isEqualTo(1);
-        assertThat(films).hasFieldOrPropertyWithValue("name", "FILM");
+        assertThat(films.get(0)).hasFieldOrPropertyWithValue("name", "FILM");
     }
 }

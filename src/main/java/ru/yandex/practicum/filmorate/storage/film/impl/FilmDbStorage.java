@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.Genre;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.GenreDao;
 import ru.yandex.practicum.filmorate.storage.film.MpaDao;
@@ -23,17 +25,19 @@ import java.util.Set;
 
 @Slf4j
 @Component
+@Primary
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final MpaDao mpaStorage;
-
     private final GenreDao genreStorage;
+    private final DirectorStorage directorStorage;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, GenreStorage genreStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, GenreStorage genreStorage, DirectorStorage directorStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaStorage = mpaStorage;
         this.genreStorage = genreStorage;
+        this.directorStorage = directorStorage;
     }
 
     @Override
@@ -134,6 +138,13 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), id).get(0);
     }
 
+
+    @Override
+    public Collection<Film> getFilmsByDirectorId(int id, String sortBy){
+        String sql = "SELECT * FROM FILMS WHERE FILM_ID IN (SELECT FILM_ID FROM FILM_DIRECTOR WHERE DIRECTOR_ID = ?) ORDER BY FILMS.RELEASE_DATE;";
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)));
+    }
+
     @Override
     public void validationId(Integer id) {
         String sql = "SELECT COUNT(*) FROM FILMS WHERE FILM_ID=?";
@@ -156,6 +167,7 @@ public class FilmDbStorage implements FilmStorage {
         film.setId(id);
         setMpa(film, mpa);
         setGenre(film);
+        setDirectors(film);
         return film;
     }
 
@@ -166,5 +178,10 @@ public class FilmDbStorage implements FilmStorage {
     private void setGenre(Film film) {
         film.getGenres().clear();
         film.getGenres().addAll(genreStorage.getGenresByFilm(film.getId()));
+    }
+
+    private void setDirectors(Film film){
+        film.getDirectors().clear();
+        film.getDirectors().addAll(directorStorage.getDirectorsByFilm(film.getId()));
     }
 }

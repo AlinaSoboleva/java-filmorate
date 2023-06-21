@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.service.impl.FilmServiceImpl;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -60,6 +61,13 @@ public class FilmController {
             return new ResponseEntity<>(film, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(film, HttpStatus.OK);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public Collection<Film> getFilmsByDirectorId(
+            @PathVariable Integer directorId,
+            @RequestParam(value = "sortBy", defaultValue = "year") String sortBy) {
+        return filmService.getFilmsByDirectorId(directorId, sortBy);
     }
 
     @GetMapping("/search")

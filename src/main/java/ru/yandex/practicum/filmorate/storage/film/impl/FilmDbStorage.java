@@ -42,13 +42,50 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getRecommendations(Integer id) {
-        /*  1.Найти пользователей с максимальным количеством пересечения по лайкам.
-            2.Определить фильмы, которые один пролайкал, а другой нет.
-            3.Рекомендовать фильмы, которым поставил лайк пользователь с похожими вкусами, а тот, для кого составляется рекомендация, ещё не поставил.*/
-
+        String sql = "SELECT USER_ID FROM USERS WHERE NOT USER_ID = ?";
+        List<Integer> allUsersListIds = jdbcTemplate.query(sql, ((rs, rowNum) -> userId(rs)), id);
         List<Film> recommendationFilms = new ArrayList<>();
+        List<Integer> userListIdFilms = new ArrayList<>(getListIdFilms(id));
+
+        int count = 0;
+
+        List<Integer> userIdsForRecommendations = new ArrayList<>();
+
+        for (Integer userId : allUsersListIds) {
+            int countLikesSize = getIntersectionsByLikes(userId, userListIdFilms).size();
+
+            if (countLikesSize > count) {
+                count = getIntersectionsByLikes(userId, userListIdFilms).size();
+            }
+
+            if (countLikesSize == count) {
+                userIdsForRecommendations.add(userId);
+            }
+        }
+
+        for (Integer userId : userIdsForRecommendations) {
+            List<Integer> excludeRecommendationFilmsIds = new ArrayList<>(userListIdFilms);
+            List<Integer> newUserListIdFilms = new ArrayList<>(getListIdFilms(userId));
+            newUserListIdFilms.removeAll(excludeRecommendationFilmsIds);
+            for (Integer newUserId : newUserListIdFilms) {
+                recommendationFilms.add(getById(newUserId));
+            }
+        }
 
         return recommendationFilms;
+    }
+
+    private List<Integer> getIntersectionsByLikes(Integer userId, List<Integer> listIdFilms) {
+        List<Integer> newUserListIdFilms = new ArrayList<>(listIdFilms);
+        List<Integer> userListIdFilms = new ArrayList<>(getListIdFilms(userId));
+        //удаляет элементы, не принадлежащие переданной коллекции
+        newUserListIdFilms.retainAll(userListIdFilms);
+        return newUserListIdFilms;
+    }
+
+    private List<Integer> getListIdFilms(Integer userId) {
+        String sql = "SELECT FILM_ID FROM LIKES WHERE USER_ID=?";
+        return new ArrayList<>(jdbcTemplate.query(sql, ((rs, rowNum) -> filmId(rs)), userId));
     }
 
     @Override
@@ -140,6 +177,14 @@ public class FilmDbStorage implements FilmStorage {
         setMpa(film, mpa);
         setGenre(film);
         return film;
+    }
+
+    private Integer filmId(ResultSet resultSet) throws SQLException {
+        return resultSet.getInt("film_id");
+    }
+
+    private Integer userId(ResultSet resultSet) throws SQLException {
+        return resultSet.getInt("user_id");
     }
 
     private void setMpa(Film film, int mpa) {

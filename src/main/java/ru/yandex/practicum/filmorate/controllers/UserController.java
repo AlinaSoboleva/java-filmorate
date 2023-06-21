@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
     private final UserService userService;
     private final FriendsService friendsService;
@@ -74,6 +76,8 @@ public class UserController {
 
     @GetMapping("/{id}/recommendations")
     public List<Film> getRecommendations(@PathVariable Integer id){
+        log.debug("Получен Get запрос users/{id}/recommendations на получение " +
+                "списка рекомендуемых фильмов для пользователя с Id: {}",id);
         return filmService.getRecommendations(id);
     }
 }

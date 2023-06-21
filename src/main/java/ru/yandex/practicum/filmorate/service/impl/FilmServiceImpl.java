@@ -77,6 +77,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getRecommendations(Integer id) {
+        log.debug("Получены рекомендации фильмов по id: {}", id);
         return filmStorage.getRecommendations(id);
     }
 }

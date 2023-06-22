@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -83,7 +84,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public Collection<Film> search(String query, String by) {
+    public List<Film> search(String query, String by) {
         return filmStorage.search(query, by);
     }
 }

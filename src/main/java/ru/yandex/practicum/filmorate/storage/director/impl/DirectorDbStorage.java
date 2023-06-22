@@ -84,7 +84,7 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public void deleteDirectorByFilm(Film film){
+    public void deleteDirectorByFilm(Film film) {
         String sql = "DELETE FROM FILM_DIRECTOR WHERE FILM_ID = ?;";
         jdbcTemplate.update(sql, film.getId());
     }
@@ -96,10 +96,10 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public void setDirectorsInDb(Film film){
+    public void setDirectorsInDb(Film film) {
         List<Director> directors = film.getDirectors();
         String sql = "MERGE INTO FILM_DIRECTOR KEY (FILM_ID, DIRECTOR_ID) VALUES (?, ?);";
-        for (Director director: directors){
+        for (Director director : directors) {
             jdbcTemplate.update(sql, film.getId(), director.getId());
         }
     }

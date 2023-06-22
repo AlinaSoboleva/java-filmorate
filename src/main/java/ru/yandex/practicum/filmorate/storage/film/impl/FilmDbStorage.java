@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -48,7 +49,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> search(String query, String by) {
+    public List<Film> search(String query, String by) {
         StringBuilder sql = new StringBuilder("SELECT f.film_id, " +
                 "f.name, " +
                 "f.description, " +
@@ -124,7 +125,7 @@ public class FilmDbStorage implements FilmStorage {
         for (Genre genre : genres) {
             genreStorage.createGenreByFilm(genre.getId(), film.getId());
         }
-        if (film.getDirectors() == null|| film.getDirectors().isEmpty()){
+        if (film.getDirectors() == null || film.getDirectors().isEmpty()) {
             directorStorage.deleteDirectorByFilm(film);
         }
         setDirectors(film);
@@ -152,12 +153,12 @@ public class FilmDbStorage implements FilmStorage {
 
 
     @Override
-    public Collection<Film> getFilmsByDirectorId(int id, String sortBy){
-        if(directorStorage.getDirectorById(id) ==null) {
+    public Collection<Film> getFilmsByDirectorId(int id, String sortBy) {
+        if (directorStorage.getDirectorById(id) == null) {
             throw new IllegalArgumentException("Режиссер не найден");
         }
         String sql;
-        if(sortBy.equals("likes")){
+        if (sortBy.equals("likes")) {
             sql = "SELECT F.* FROM FILMS F JOIN FILM_DIRECTOR FD ON F.FILM_ID = FD.FILM_ID LEFT JOIN LIKES L ON F.FILM_ID = L.FILM_ID WHERE FD.DIRECTOR_ID = ? GROUP BY F.FILM_ID ORDER BY COUNT(L.FILM_ID) DESC;";
         } else if (sortBy.equals("year")) {
             sql = "SELECT * FROM FILMS WHERE FILM_ID IN (SELECT FILM_ID FROM FILM_DIRECTOR WHERE DIRECTOR_ID = ?) ORDER BY FILMS.RELEASE_DATE;";
@@ -202,7 +203,7 @@ public class FilmDbStorage implements FilmStorage {
         film.getGenres().addAll(genreStorage.getGenresByFilm(film.getId()));
     }
 
-    private void setDirectors(Film film){
+    private void setDirectors(Film film) {
         directorStorage.setDirectorsInDb(film);
         film.getDirectors().clear();
         film.getDirectors().addAll(directorStorage.getDirectorsByFilm(film.getId()));

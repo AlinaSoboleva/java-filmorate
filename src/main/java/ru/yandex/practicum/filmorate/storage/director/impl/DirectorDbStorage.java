@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.Exceptions.DirectorIdException;
+import ru.yandex.practicum.filmorate.Exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.film.Director;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
@@ -69,7 +69,7 @@ public class DirectorDbStorage implements DirectorStorage {
     public Boolean update(Director director) {
         try {
             validationId(director.getId());
-        } catch (DirectorIdException e) {
+        } catch (IncorrectParameterException e) {
             return false;
         }
         String sql = "UPDATE DIRECTORS SET NAME = ?" + "WHERE DIRECTOR_ID = ?;";
@@ -110,7 +110,7 @@ public class DirectorDbStorage implements DirectorStorage {
         SqlRowSet resultSet = jdbcTemplate.queryForRowSet(sql, id);
         if (resultSet.next()) {
             if (resultSet.getInt("count(*)") == 0) {
-                throw new DirectorIdException(String.format("Режиссёр с id %s не существует", id));
+                throw new IncorrectParameterException(String.format("Режиссёр с id %s не существует", id));
             }
         }
     }

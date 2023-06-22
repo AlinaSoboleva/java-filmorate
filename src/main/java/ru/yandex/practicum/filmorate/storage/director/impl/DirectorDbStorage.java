@@ -40,10 +40,10 @@ public class DirectorDbStorage implements DirectorStorage {
         if (directorsList.isEmpty()) {
             log.info("Режиссёр с id {} не найден", id);
             throw new DirectorIdException("Режиссёр не найден");
-        } else {
-            log.info("Найден режиссёр {}", directorsList.get(0).getName());
-            return directorsList.get(0);
         }
+        log.info("Найден режиссёр {}", directorsList.get(0).getName());
+        return directorsList.get(0);
+
     }
 
     @Override

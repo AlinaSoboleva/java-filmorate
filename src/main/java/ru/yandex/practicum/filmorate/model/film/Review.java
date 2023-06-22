@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class Review {
-    private  int  reviewId = 0;
+    private int reviewId = 0;
     @NotNull
     @NotBlank
     private final String content;

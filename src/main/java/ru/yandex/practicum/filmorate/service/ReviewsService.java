@@ -15,4 +15,12 @@ public interface ReviewsService {
 
     List<Review> findAll(int filmId, int count);
 
+    void deleteLike(Integer reviewId, Integer userId);
+
+    void putDislike(Integer reviewId, Integer userId);
+
+    void putLike(Integer reviewId, Integer userId);
+
+    void deleteDislike(Integer reviewId, Integer userId);
+
 }

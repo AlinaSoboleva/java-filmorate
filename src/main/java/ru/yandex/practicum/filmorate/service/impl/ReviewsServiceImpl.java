@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service.impl;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.film.Review;
 import ru.yandex.practicum.filmorate.service.ReviewsService;
+import ru.yandex.practicum.filmorate.storage.ReviewsLikeDao;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.ReviewsDao;
 import ru.yandex.practicum.filmorate.storage.film.impl.FilmDbStorage;
@@ -14,15 +15,44 @@ import java.util.List;
 @Service
 public class ReviewsServiceImpl implements ReviewsService {
 
-    private  final ReviewsDao reviewsDao;
+    private final ReviewsDao reviewsDao;
     private final FilmStorage filmStorage;
-
     private final UserStorage userStorage;
+    private final ReviewsLikeDao reviewsLikeDao;
 
-    public ReviewsServiceImpl(ReviewsDao reviewsDao, FilmDbStorage filmStorage, UserDbStorage userStorage) {
+    public ReviewsServiceImpl(ReviewsDao reviewsDao, FilmDbStorage filmStorage, UserDbStorage userStorage, ReviewsLikeDao reviewsLikeDao) {
         this.reviewsDao = reviewsDao;
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.reviewsLikeDao = reviewsLikeDao;
+    }
+
+    @Override
+    public void putLike(Integer reviewId, Integer userId) {
+        userStorage.validationId(userId);
+        reviewsDao.validationId(reviewId);
+        reviewsLikeDao.putLike(reviewId, userId);
+    }
+
+    @Override
+    public void putDislike(Integer reviewId, Integer userId) {
+        userStorage.validationId(userId);
+        reviewsDao.validationId(reviewId);
+        reviewsLikeDao.putDislike(reviewId, userId);
+    }
+
+    @Override
+    public void deleteLike(Integer reviewId, Integer userId) {
+        userStorage.validationId(userId);
+        reviewsDao.validationId(reviewId);
+        reviewsLikeDao.deleteLike(reviewId, userId);
+    }
+
+    @Override
+    public void deleteDislike(Integer reviewId, Integer userId) {
+        userStorage.validationId(userId);
+        reviewsDao.validationId(reviewId);
+        reviewsLikeDao.deleteDislike(reviewId, userId);
     }
 
     @Override
@@ -42,7 +72,7 @@ public class ReviewsServiceImpl implements ReviewsService {
 
     @Override
     public void delete(int id) {
-
+        reviewsDao.delete(id);
     }
 
     @Override
@@ -54,4 +84,5 @@ public class ReviewsServiceImpl implements ReviewsService {
     public List<Review> findAll(int filmId, int count) {
         return reviewsDao.getReviews(filmId, count);
     }
+
 }

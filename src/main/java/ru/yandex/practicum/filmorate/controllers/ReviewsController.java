@@ -22,10 +22,34 @@ public class ReviewsController {
         this.reviewsService = reviewsService;
     }
 
+    @PutMapping("/{id}/like/{userId}")
+    public void putLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        reviewsService.putLike(id, userId);
+    }
+
+    @PutMapping("/{id}/dislike/{userId}")
+    public void putDislike(@PathVariable Integer id, @PathVariable Integer userId) {
+        reviewsService.putDislike(id, userId);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteReview(@PathVariable Integer id) {
+        reviewsService.delete(id);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        reviewsService.deleteLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/dislike/{userId}")
+    public void deleteDislike(@PathVariable Integer id, @PathVariable Integer userId) {
+        reviewsService.deleteDislike(id, userId);
+    }
+
     @GetMapping
     public List<Review> getReviews(@RequestParam(defaultValue = "0") int filmId, @RequestParam(defaultValue = "10") int count) {
         return reviewsService.findAll(filmId, count);
-        //feedService.getFollowFeed(userId, max);
     }
 
     @GetMapping("/{id}")
@@ -35,7 +59,7 @@ public class ReviewsController {
 
     @PostMapping
     public ResponseEntity<Review> create(@Valid @RequestBody Review review) {
-        if(review.getUserId() == 0 || review.getFilmId() == 0){
+        if (review.getUserId() == 0 || review.getFilmId() == 0) {
             return new ResponseEntity<>(review, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(reviewsService.create(review), HttpStatus.OK);

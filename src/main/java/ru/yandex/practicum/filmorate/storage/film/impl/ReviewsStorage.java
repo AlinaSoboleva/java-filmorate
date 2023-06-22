@@ -26,6 +26,13 @@ public class ReviewsStorage implements ReviewsDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
+    public void delete(Integer id) {
+        validationId(id);
+        String sql = "DELETE FROM REVIEWS WHERE ID = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
     public Review create(Review review) {
         log.info("Сохранение отзыва {}", review);
         if (review.getReviewId() == 0) {
@@ -49,19 +56,23 @@ public class ReviewsStorage implements ReviewsDao {
 
     @Override
     public boolean update(Review review) {
+        log.info("Обновление отзыва {} ", review);
         try {
             validationId(review.getReviewId());
         } catch (ReviewsIdException e) {
+            log.info("Отзыв {} не удалось обновить", review);
             return false;
         }
-        String sql = "UPDATE REVIEWS SET  CONTENT = ?, IS_POSITIVE = ?" +
-                "                WHERE ID = ?;";
+        String sql = "UPDATE REVIEWS SET  CONTENT = ?, IS_POSITIVE = ?" + "                WHERE ID = ?;";
         jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(), review.getReviewId());
+        log.info("Отзыв {} обновлен", review);
         return true;
+
     }
 
     @Override
     public Review getById(int id) {
+        log.info("Получение отзыва с id  {}", id);
         validationId(id);
         String sql = "SELECT * FROM REVIEWS WHERE ID = ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeReview(rs)), id).get(0);
@@ -89,21 +100,18 @@ public class ReviewsStorage implements ReviewsDao {
     }
 
     private List<Review> findAllByFilmId(int filmId, int count) {
-        String sql = "SELECT * FROM REVIEWS WHERE FILM_ID IN (?) LIMIT ?";
-        return jdbcTemplate.query(sql, ((rs, rowNum) ->
-                makeReview(rs)), filmId, count);
+        String sql = "SELECT * FROM REVIEWS WHERE FILM_ID IN (?) ORDER BY USEFUL DESC, ID LIMIT ?";
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeReview(rs)), filmId, count);
     }
 
     private List<Review> findAll(int count) {
-        String sql = "SELECT * FROM REVIEWS LIMIT ?";
-        return jdbcTemplate.query(sql, ((rs, rowNum) ->
-                makeReview(rs)), count);
+        String sql = "SELECT * FROM REVIEWS ORDER BY USEFUL DESC, ID LIMIT ?";
+
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeReview(rs)), count);
     }
 
     private Review makeReview(ResultSet rs) throws SQLException {
-        Review review = new Review(rs.getString("content"),
-                rs.getBoolean("is_positive"), rs.getInt("user_id"),
-                rs.getInt("film_id"), rs.getInt("useful"));
+        Review review = new Review(rs.getString("content"), rs.getBoolean("is_positive"), rs.getInt("user_id"), rs.getInt("film_id"), rs.getInt("useful"));
         review.setReviewId(rs.getInt("id"));
         return review;
     }

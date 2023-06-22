@@ -41,6 +41,28 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getRecommendations(Integer id) {
+        String maxUserIntersection = " (SELECT l.user_id u_id, " +
+                "COUNT(l.user_id) cnt " +
+                "FROM Likes l WHERE l.user_id <> ? " + // ID остальных пользователей
+                "AND l.film_id IN (" + // которые поставили лайки тем же фильмам, что и пользователь в запросе
+                "SELECT ll.film_id FROM " +
+                " Likes ll WHERE ll.user_id = ?)" +
+                "GROUP BY l.user_id " + // группировка, так как используем аггрегирующую функцию
+                "ORDER BY cnt DESC " + // сортируем по убыванию
+                "LIMIT 1) its "; // выбираем максимальное совпадение
+
+        String recommendedFilmsSql = "SELECT * FROM Films fm " + // все фильмы
+                "LEFT JOIN Likes lk ON fm.film_id = lk.film_id " +
+                "WHERE lk.user_id IN (" + // которые пролайкал пользователь с максимальным пересечением по лайкам
+                "SELECT u_id FROM " + maxUserIntersection + ") " +
+                "AND lk.film_id NOT IN (" + // и которым наш пользователь не ставил лайк
+                "SELECT llk.film_id FROM LIKES llk " +
+                "WHERE llk.user_id = ?)";
+        return jdbcTemplate.query(recommendedFilmsSql, (rs, rowNum) -> makeFilm(rs), id, id, id);
+    }
+
+    @Override
     public void create(Film film) {
         log.info("Сохранение фильма {}", film);
         if (film.getId() == 0) {

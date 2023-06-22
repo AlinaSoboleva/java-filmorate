@@ -1,16 +1,16 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.impl.FilmLikeStorage;
-import ru.yandex.practicum.filmorate.storage.film.impl.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.impl.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Collection;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -22,7 +22,9 @@ public class FilmServiceImpl implements FilmService {
 
     private final FilmLikeStorage likeStorage;
 
-    public FilmServiceImpl(FilmDbStorage filmStorage, UserDbStorage userStorage, FilmLikeStorage likeStorage) {
+    public FilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                           UserDbStorage userStorage,
+                           FilmLikeStorage likeStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.likeStorage = likeStorage;
@@ -72,5 +74,21 @@ public class FilmServiceImpl implements FilmService {
         }
         log.debug("Фильм с id: {} не найден", film.getId());
         return null;
+    }
+
+    @Override
+    public List<Film> getRecommendations(Integer id) {
+        log.debug("Получены рекомендации фильмов по id: {}", id);
+        return filmStorage.getRecommendations(id);
+    }
+
+    @Override
+    public void deleteFilm(Integer filmId) {
+        filmStorage.delete(filmId);
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
     }
 }

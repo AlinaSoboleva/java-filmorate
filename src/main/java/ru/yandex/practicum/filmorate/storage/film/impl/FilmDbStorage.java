@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.film.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
+import ru.yandex.practicum.filmorate.Exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -25,7 +27,6 @@ public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final MpaDao mpaStorage;
-
     private final GenreDao genreStorage;
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, GenreStorage genreStorage) {
@@ -61,6 +62,50 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE llk.user_id = ?)";
         return jdbcTemplate.query(recommendedFilmsSql, (rs, rowNum) -> makeFilm(rs), id, id, id);
     }
+
+    @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        String sql = "SELECT f.film_id, " +
+                "f.name, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "f.rating_id, " +
+                "COUNT(l.film_id) l_cnt " +
+                "FROM FILMS f " +
+                "LEFT JOIN LIKES l ON l.film_id = f.film_id " +
+                "WHERE f.film_id IN (" +
+                    "SELECT f.film_id film_id " +
+                    "FROM FILMS ff " +
+                    "LEFT JOIN LIKES ll ON ff.film_id = ll.film_id " +
+                    "WHERE ll.user_id = ? " +
+                    "INTERSECT " +
+                    "SELECT fff.film_id " +
+                    "FROM FILMS fff " +
+                    "LEFT JOIN LIKES lll ON fff.film_id = lll.film_id " +
+                    "WHERE lll.user_id = ?" +
+                ") " +
+                "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
+                "ORDER BY l_cnt DESC";
+        log.info(
+                "Executing SQL query=[{}] to retrieve films liked by user with id={}",
+                sql,
+                userId
+        );
+        try {
+            List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId, friendId);
+            log.info("Retrieved films from DB liked by user with id={}: {}", userId, films);
+            return films;
+        } catch (DataIntegrityViolationException ex) {
+            String msg = String.format(
+                    "Either user with id=%d or friend with id=%d not found in DB.",
+                    userId,
+                    friendId
+            );
+            throw new UserIdException(msg);
+        }
+    }
+
 
     @Override
     public void create(Film film) {

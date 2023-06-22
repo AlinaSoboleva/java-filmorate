@@ -26,6 +26,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        // stub
+        return Collections.emptyList();
+    }
+
+    @Override
     public List<Film> getRecommendations(Integer id) {
         return null;
     }

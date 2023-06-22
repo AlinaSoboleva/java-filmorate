@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/*@Component("inMemoryFilmStorage")
+@Component("inMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Integer, Film> films = new HashMap<>();
@@ -26,7 +26,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> search(String query, String by) {
+    public Collection<Film> getFilmsByDirectorId(int id, String sortBy) {
+        return null;
+    }
+
+    @Override
+    public List<Film> search(String query, String by) {
         return null;
     }
 
@@ -72,4 +77,4 @@ public class InMemoryFilmStorage implements FilmStorage {
             return o2.getRate() - o1.getRate();
         }
     }
-}*/
+}

@@ -42,50 +42,24 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getRecommendations(Integer id) {
-        String sql = "SELECT USER_ID FROM USERS WHERE NOT USER_ID = ?";
-        List<Integer> allUsersListIds = jdbcTemplate.query(sql, ((rs, rowNum) -> userId(rs)), id);
-        List<Film> recommendationFilms = new ArrayList<>();
-        List<Integer> userListIdFilms = new ArrayList<>(getListIdFilms(id));
+        String maxUserIntersection = " (SELECT l.user_id u_id, " +
+                "COUNT(l.user_id) cnt " +
+                "FROM Likes l WHERE l.user_id <> ? " + // ID остальных пользователей
+                "AND l.film_id IN (" + // которые поставили лайки тем же фильмам, что и пользователь в запросе
+                "SELECT ll.film_id FROM " +
+                " Likes ll WHERE ll.user_id = ?)" +
+                "GROUP BY l.user_id " + // группировка, так как используем аггрегирующую функцию
+                "ORDER BY cnt DESC " + // сортируем по убыванию
+                "LIMIT 1) its "; // выбираем максимальное совпадение
 
-        int count = 0;
-
-        List<Integer> userIdsForRecommendations = new ArrayList<>();
-
-        for (Integer userId : allUsersListIds) {
-            int countLikesSize = getIntersectionsByLikes(userId, userListIdFilms).size();
-
-            if (countLikesSize > count) {
-                count = getIntersectionsByLikes(userId, userListIdFilms).size();
-            }
-
-            if (countLikesSize == count) {
-                userIdsForRecommendations.add(userId);
-            }
-        }
-
-        for (Integer userId : userIdsForRecommendations) {
-            List<Integer> excludeRecommendationFilmsIds = new ArrayList<>(userListIdFilms);
-            List<Integer> newUserListIdFilms = new ArrayList<>(getListIdFilms(userId));
-            newUserListIdFilms.removeAll(excludeRecommendationFilmsIds);
-            for (Integer newUserId : newUserListIdFilms) {
-                recommendationFilms.add(getById(newUserId));
-            }
-        }
-
-        return recommendationFilms;
-    }
-
-    private List<Integer> getIntersectionsByLikes(Integer userId, List<Integer> listIdFilms) {
-        List<Integer> newUserListIdFilms = new ArrayList<>(listIdFilms);
-        List<Integer> userListIdFilms = new ArrayList<>(getListIdFilms(userId));
-        //удаляет элементы, не принадлежащие переданной коллекции
-        newUserListIdFilms.retainAll(userListIdFilms);
-        return newUserListIdFilms;
-    }
-
-    private List<Integer> getListIdFilms(Integer userId) {
-        String sql = "SELECT FILM_ID FROM LIKES WHERE USER_ID=?";
-        return new ArrayList<>(jdbcTemplate.query(sql, ((rs, rowNum) -> filmId(rs)), userId));
+        String recommendedFilmsSql = "SELECT * FROM Films fm " + // все фильмы
+                "LEFT JOIN Likes lk ON fm.film_id = lk.film_id " +
+                "WHERE lk.user_id IN (" + // которые пролайкал пользователь с максимальным пересечением по лайкам
+                "SELECT u_id FROM " + maxUserIntersection + ") " +
+                "AND lk.film_id NOT IN (" + // и которым наш пользователь не ставил лайк
+                "SELECT llk.film_id FROM LIKES llk " +
+                "WHERE llk.user_id = ?)";
+        return jdbcTemplate.query(recommendedFilmsSql, (rs, rowNum) -> makeFilm(rs), id, id, id);
     }
 
     @Override
@@ -177,14 +151,6 @@ public class FilmDbStorage implements FilmStorage {
         setMpa(film, mpa);
         setGenre(film);
         return film;
-    }
-
-    private Integer filmId(ResultSet resultSet) throws SQLException {
-        return resultSet.getInt("film_id");
-    }
-
-    private Integer userId(ResultSet resultSet) throws SQLException {
-        return resultSet.getInt("user_id");
     }
 
     private void setMpa(Film film, int mpa) {

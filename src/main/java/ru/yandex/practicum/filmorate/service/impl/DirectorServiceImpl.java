@@ -21,6 +21,7 @@ public class DirectorServiceImpl implements DirectorService {
     }
 
     public Director getDirectorById(int id) {
+        directorStorage.validationId(id);
         return directorStorage.getDirectorById(id);
     }
 

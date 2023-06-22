@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -25,7 +24,7 @@ public class FilmServiceImpl implements FilmService {
     private final LikeStorage likeStorage;
     private final DirectorStorage directorStorage;
 
-    public FilmServiceImpl(FilmDbStorage filmStorage, UserDbStorage userStorage, LikeStorage likeStorage) {
+    public FilmServiceImpl(FilmDbStorage filmStorage, UserDbStorage userStorage, LikeStorage likeStorage, DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.likeStorage = likeStorage;

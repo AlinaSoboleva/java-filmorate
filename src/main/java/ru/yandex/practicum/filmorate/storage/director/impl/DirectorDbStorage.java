@@ -9,7 +9,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.DirectorIdException;
 import ru.yandex.practicum.filmorate.model.film.Director;
-import ru.yandex.practicum.filmorate.model.film.Genre;
+import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 
 import java.sql.PreparedStatement;
@@ -49,19 +49,19 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public Director create(Director director) {
         log.info("Сохранение режиссёра {}", director);
-        if (director.getId() == 0) {
-            KeyHolder holder = new GeneratedKeyHolder();
-            String sql = "INSERT INTO DIRECTORS(NAME) " + "VALUES (?)";
 
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"DIRECTOR_ID"});
-                ps.setString(1, director.getName());
-                return ps;
-            }, holder);
+        KeyHolder holder = new GeneratedKeyHolder();
+        String sql = "INSERT INTO DIRECTORS(NAME) " + "VALUES (?)";
 
-            director.setId(Objects.requireNonNull(holder.getKey()).intValue());
-            log.info("Режиссёр {}  сохранен", director);
-        }
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"DIRECTOR_ID"});
+            ps.setString(1, director.getName());
+            return ps;
+        }, holder);
+
+        director.setId(Objects.requireNonNull(holder.getKey()).intValue());
+        log.info("Режиссёр {}  сохранен", director);
+
         return director;
     }
 
@@ -84,9 +84,24 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
+    public void deleteDirectorByFilm(Film film){
+        String sql = "DELETE FROM FILM_DIRECTOR WHERE FILM_ID = ?;";
+        jdbcTemplate.update(sql, film.getId());
+    }
+
+    @Override
     public List<Director> getDirectorsByFilm(int filmId) {
         String sql = "SELECT * FROM DIRECTORS WHERE DIRECTOR_ID IN (SELECT DIRECTOR_ID FROM FILM_DIRECTOR WHERE FILM_ID = ?);";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Director(rs.getInt("DIRECTOR_ID"), rs.getString("name")), filmId);
+    }
+
+    @Override
+    public void setDirectorsInDb(Film film){
+        List<Director> directors = film.getDirectors();
+        String sql = "MERGE INTO FILM_DIRECTOR KEY (FILM_ID, DIRECTOR_ID) VALUES (?, ?);";
+        for (Director director: directors){
+            jdbcTemplate.update(sql, film.getId(), director.getId());
+        }
     }
 
     @Override

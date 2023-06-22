@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,5 +30,5 @@ public class Film {
 
     private final Set<Genre> genres = new HashSet<>();
 
-    private List<Director> directors;
+    private List<Director> directors = new ArrayList<>();
 }

@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/director")
+@RequestMapping("/directors")
 @RequiredArgsConstructor
 public class DirectorController {
     private final DirectorService directorService;
@@ -28,6 +28,7 @@ public class DirectorController {
 
     @PostMapping
     public ResponseEntity<Director> create(@Valid @RequestBody Director director) {
+        System.out.println(director);
         return new ResponseEntity<>(directorService.create(director), HttpStatus.OK);
     }
 
@@ -41,7 +42,7 @@ public class DirectorController {
     }
 
     @DeleteMapping("/{directorId}")
-    public void deleteDirector(@PathVariable Integer id) {
+    public void deleteDirector(@PathVariable("directorId")  Integer id) {
         directorService.delete(id);
     }
 }

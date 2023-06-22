@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.impl.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.impl.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.film.impl.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
@@ -20,9 +20,9 @@ public class FilmServiceImpl implements FilmService {
 
     private final UserStorage userStorage;
 
-    private final LikeStorage likeStorage;
+    private final FilmLikeStorage likeStorage;
 
-    public FilmServiceImpl(FilmDbStorage filmStorage, UserDbStorage userStorage, LikeStorage likeStorage) {
+    public FilmServiceImpl(FilmDbStorage filmStorage, UserDbStorage userStorage, FilmLikeStorage likeStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.likeStorage = likeStorage;

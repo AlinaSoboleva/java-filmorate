@@ -3,14 +3,14 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.storage.LikeDao;
+import ru.yandex.practicum.filmorate.storage.FilmLikeDao;
 
 @Slf4j
 @Component
-public class LikeStorage implements LikeDao {
+public class FilmLikeStorage implements FilmLikeDao {
     private final JdbcTemplate jdbcTemplate;
 
-    public LikeStorage(JdbcTemplate jdbcTemplate) {
+    public FilmLikeStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

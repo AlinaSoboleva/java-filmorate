@@ -16,4 +16,6 @@ public class ErrorHandler {
     public ErrorResponse handleId(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+
 }

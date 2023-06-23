@@ -96,7 +96,7 @@ class FilmoRateApplicationTests extends BaseTest {
 
         List<Film> films = (List<Film>) filmStorage.getFilms();
 
-        assertThat(films.size()).isEqualTo(3);
+        assertThat(films.size()).isEqualTo(5);
     }
 
     @Test
@@ -107,14 +107,14 @@ class FilmoRateApplicationTests extends BaseTest {
         filmStorage.create(film);
         List<Film> films = (List<Film>) filmStorage.getFilms();
 
-        assertThat(films.size()).isEqualTo(4);
-        assertThat(films.get(3)).hasFieldOrPropertyWithValue("name", "newFilm");
+        assertThat(films.size()).isEqualTo(6);
+        assertThat(films.get(5)).hasFieldOrPropertyWithValue("name", "newFilm");
 
         filmStorage.delete(film.getId());
 
         List<Film> films2 = (List<Film>) filmStorage.getFilms();
 
-        assertThat(films2.size()).isEqualTo(3);
+        assertThat(films2.size()).isEqualTo(5);
     }
 
     @Test
@@ -126,7 +126,7 @@ class FilmoRateApplicationTests extends BaseTest {
         filmStorage.update(film);
         List<Film> films = (List<Film>) filmStorage.getFilms();
 
-        assertThat(films.size()).isEqualTo(3);
+        assertThat(films.size()).isEqualTo(5);
         assertThat(films.get(0)).hasFieldOrPropertyWithValue("name", "newFilm");
         assertThat(films.get(0)).hasFieldOrPropertyWithValue("description", "newDesc");
     }

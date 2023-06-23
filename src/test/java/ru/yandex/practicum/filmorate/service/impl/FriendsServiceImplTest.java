@@ -27,20 +27,24 @@ class FriendsServiceImplTest extends BaseTest {
     private final EventFeedService eventFeedService;
 
     @Test
-    void whenDeleteFriendOfNonExistingUser_eventNotSaved() {
+    void whenDeleteFriendOfNonExistingUser_getEventFeedForNonExistingThrows() {
         friendsService.deleteFriend(1000, 1000);
-        List<Event> eventFeedForUser = eventFeedService.getEventFeedForUser(1000);
-        assertThat(eventFeedForUser).isEmpty();
+        assertThrows(
+                UserIdException.class,
+                () -> eventFeedService.getEventFeedForUser(1000)
+        );
     }
 
     @Test
-    void whenAddFriendOfNonExistingUser_eventNotSaved() {
+    void whenAddFriendOfNonExistingUser_getEventFeedForNonExistingUserThrows() {
         assertThrows(
                 UserIdException.class,
                 () -> friendsService.addFriend(1000, EXISTING_FRIEND_ID)
         );
-        List<Event> eventFeedForUser = eventFeedService.getEventFeedForUser(1000);
-        assertThat(eventFeedForUser).isEmpty();
+        assertThrows(
+                UserIdException.class,
+                () -> eventFeedService.getEventFeedForUser(1000)
+        );
     }
 
     @Test

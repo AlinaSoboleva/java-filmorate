@@ -55,13 +55,15 @@ class FilmServiceImplTest extends BaseTest {
     private final FilmLikeDao likeDao;
 
     @Test
-    void whenAddLikeByNonExistingUser_eventNotSavedToDB() {
+    void whenAddLikeByNonExistingUser_getEventFeedForNonExistingUserThrows() {
         assertThrows(
                 UserIdException.class,
                 () -> filmService.putLike(EXISTING_FILM_ID, 1000)
         );
-        List<Event> eventFeedForUser = eventFeedService.getEventFeedForUser(1000);
-        assertThat(eventFeedForUser).isEmpty();
+        assertThrows(
+                UserIdException.class,
+                () -> eventFeedService.getEventFeedForUser(1000)
+        );
     }
 
     @Test
@@ -75,13 +77,15 @@ class FilmServiceImplTest extends BaseTest {
     }
 
     @Test
-    void whenDeleteLikeOfNonExistingUser_eventNotSavedToDB() {
+    void whenDeleteLikeOfNonExistingUser_getEventFeedForNonExistingUserThrows() {
         assertThrows(
                 UserIdException.class,
                 () -> filmService.deleteLike(EXISTING_FILM_ID, 1000)
         );
-        List<Event> eventFeedForUser = eventFeedService.getEventFeedForUser(1000);
-        assertThat(eventFeedForUser).isEmpty();
+        assertThrows(
+                UserIdException.class,
+                () -> eventFeedService.getEventFeedForUser(1000)
+        );
     }
 
     @Test

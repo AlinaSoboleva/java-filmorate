@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.service.FriendsService;
 import ru.yandex.practicum.filmorate.storage.user.FriendDao;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.storage.user.impl.FriendStorage;
-import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 
 import java.util.List;
 import java.util.stream.Collectors;

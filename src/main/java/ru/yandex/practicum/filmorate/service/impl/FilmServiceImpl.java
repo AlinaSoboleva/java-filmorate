@@ -37,6 +37,14 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Collection<Film> findAllTopFilms(Integer count, Integer genreId, Integer year) {
+        if (genreId == null && year == null) {
+            return filmStorage.findTopFilms(count);
+        }
+        else if (genreId == null) {
+            return filmStorage.findAllTopIfYear(count, year);
+        } else if (year == null) {
+            return filmStorage.findAllTopIfGenre(count, genreId);
+        }
         return filmStorage.findAllTopFilms(count, genreId, year);
     }
 

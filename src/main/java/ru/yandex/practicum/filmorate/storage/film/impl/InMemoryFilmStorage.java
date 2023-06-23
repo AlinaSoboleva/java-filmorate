@@ -27,6 +27,21 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> findAllTopIfGenre(Integer count, Integer genreId) {
+        return null;
+    }
+
+    @Override
+    public Collection<Film> findAllTopIfYear(Integer count, Integer year) {
+        return null;
+    }
+
+    @Override
+    public Collection<Film> findTopFilms(Integer count) {
+        return null;
+    }
+
+    @Override
     public Film getById(Integer id) {
         return films.get(id);
     }

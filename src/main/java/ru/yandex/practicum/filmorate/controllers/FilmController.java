@@ -43,10 +43,10 @@ public class FilmController {
     @GetMapping("/popular")
     public Collection<Film> findAll(@RequestParam(value = "count", defaultValue = "10", required = false)
                                     @Positive(message = "Некорректное значение count") Integer count,
-                                    @RequestParam(value = "genreId", defaultValue = "1", required = false)
+                                    @RequestParam(value = "genreId", required = false)
                                     @Positive(message = "Некорректное значение count") Integer genreId,
-                                    @RequestParam(value = "year", defaultValue = "2000", required = false)
-                                    @Positive(message = "Некорректное значение count")int year) {
+                                    @RequestParam(value = "year", required = false)
+                                    @Positive(message = "Некорректное значение count") Integer year) {
         return filmService.findAllTopFilms(count, genreId, year);
     }
 

@@ -38,7 +38,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> findAllTopFilms(Integer count, Integer genreId, Integer year) {
-        String sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
+        String sql = "SELECT * " +
                 "FROM FILMS AS f " +
                 "LEFT JOIN LIKES AS L on F.FILM_ID = L.FILM_ID " +
                 "LEFT JOIN FILM_GENRE AS FG on F.FILM_ID = FG.FILM_ID " +
@@ -47,6 +47,42 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY COUNT(L.FILM_ID) " +
                 "DESC LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), genreId, year, count);
+    }
+
+    @Override
+    public Collection<Film> findAllTopIfGenre(Integer count, Integer genreId) {
+        String sql = "SELECT * " +
+                "FROM FILMS AS f " +
+                "LEFT JOIN LIKES AS L on F.FILM_ID = L.FILM_ID " +
+                "LEFT JOIN FILM_GENRE AS FG on F.FILM_ID = FG.FILM_ID " +
+                "WHERE genre_id = ? " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY COUNT(L.FILM_ID) " +
+                "DESC LIMIT ?";
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), genreId, count);
+    }
+
+    @Override
+    public Collection<Film> findAllTopIfYear(Integer count, Integer year) {
+        String sql = "SELECT * " +
+                "FROM FILMS AS f " +
+                "LEFT JOIN LIKES AS L on F.FILM_ID = L.FILM_ID " +
+                "WHERE EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY COUNT(L.FILM_ID) " +
+                "DESC LIMIT ?";
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), year, count);
+    }
+
+    @Override
+    public Collection<Film> findTopFilms(Integer count) {
+        String sql = "SELECT * " +
+                "FROM FILMS AS f " +
+                "LEFT JOIN LIKES AS L on F.FILM_ID = L.FILM_ID " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY COUNT(L.FILM_ID) " +
+                "DESC LIMIT ?";
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), count);
     }
 
     @Override

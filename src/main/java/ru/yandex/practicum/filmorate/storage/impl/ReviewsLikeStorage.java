@@ -71,10 +71,7 @@ public class ReviewsLikeStorage implements ReviewsLikeDao {
 
     private boolean isEmpty(Integer reviewId, Integer userID) {
         SqlRowSet reviewRow = jdbcTemplate.queryForRowSet("SELECT * FROM REVIEWS_LIKES WHERE REVIEW_ID = ? AND USER_ID = ?", reviewId, userID);
-        if (reviewRow.next()) {
-            return true;
-        }
-        return false;
+        return !reviewRow.next();
     }
 
     private void addReviewUseful(Integer reviewId) {

@@ -28,7 +28,6 @@ public class DirectorController {
 
     @PostMapping
     public ResponseEntity<Director> create(@Valid @RequestBody Director director) {
-        System.out.println(director);
         return new ResponseEntity<>(directorService.create(director), HttpStatus.OK);
     }
 
@@ -42,7 +41,7 @@ public class DirectorController {
     }
 
     @DeleteMapping("/{directorId}")
-    public void deleteDirector(@PathVariable("directorId")  Integer id) {
-        directorService.delete(id);
+    public void deleteDirector(@PathVariable Integer directorId) {
+        directorService.delete(directorId);
     }
 }

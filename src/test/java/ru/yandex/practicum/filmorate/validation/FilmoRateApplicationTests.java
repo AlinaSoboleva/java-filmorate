@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.storage.film.impl.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.impl.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.film.impl.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.impl.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 
 import java.time.LocalDate;
@@ -26,6 +27,7 @@ class FilmoRateApplicationTests extends BaseTest {
     private final MpaStorage mpaStorage;
 
     private final GenreStorage genreStorage;
+    private final LikeStorage likeStorage;
 
 
     @Test
@@ -57,7 +59,7 @@ class FilmoRateApplicationTests extends BaseTest {
         assertThat(users.size()).isEqualTo(3);
         assertThat(users.get(2)).hasFieldOrPropertyWithValue("email", "email@yandex.ru");
 
-        userStorage.delete(user);
+        userStorage.delete(user.getId());
 
         List<User> users2 = (List<User>) userStorage.getUsers();
 
@@ -108,7 +110,7 @@ class FilmoRateApplicationTests extends BaseTest {
         assertThat(films.size()).isEqualTo(4);
         assertThat(films.get(3)).hasFieldOrPropertyWithValue("name", "newFilm");
 
-        filmStorage.delete(film);
+        filmStorage.delete(film.getId());
 
         List<Film> films2 = (List<Film>) filmStorage.getFilms();
 
@@ -159,5 +161,20 @@ class FilmoRateApplicationTests extends BaseTest {
         List<Genre> genreList = (List<Genre>) genreStorage.findAll();
 
         assertThat(genreList.size()).isEqualTo(6);
+    }
+
+    @Test
+    @DisplayName("Получение рекомендаций фильмов по id")
+    public void testGetRecommendations() {
+        likeStorage.putLike(2,1);
+        likeStorage.putLike(3,1);
+        likeStorage.putLike(1,2);//фильм для рекомендации - FILM
+        likeStorage.putLike(2,2);
+        likeStorage.putLike(3,2);
+
+        List<Film> films = filmStorage.getRecommendations(1);
+
+        assertThat(films.size()).isEqualTo(1);
+        assertThat(films.get(0)).hasFieldOrPropertyWithValue("name", "FILM");
     }
 }

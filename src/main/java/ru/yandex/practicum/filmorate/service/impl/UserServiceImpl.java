@@ -46,4 +46,9 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Integer id) {
         return userStorage.getById(id);
     }
+
+    @Override
+    public void deleteUser(Integer userId) {
+        userStorage.delete(userId);
+    }
 }

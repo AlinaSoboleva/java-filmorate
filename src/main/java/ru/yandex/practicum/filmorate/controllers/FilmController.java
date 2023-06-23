@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.service.impl.FilmServiceImpl;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -73,5 +74,16 @@ public class FilmController {
     public Collection<Film> search(@RequestParam(required = false) String query,
                                    @RequestParam(required = false) String by) {
         return filmService.search(query, by);
+    }
+
+    @DeleteMapping("/{filmId}")
+    public void deleteFilm(@PathVariable("filmId") Integer filmId) {
+        filmService.deleteFilm(filmId);
+    }
+
+    @GetMapping("/common")
+    public ResponseEntity<List<Film>> getCommonFilms(@RequestParam("userId") Integer userId,
+                                                     @RequestParam("friendId") Integer friendId) {
+        return ResponseEntity.ok(filmService.getCommonFilms(userId, friendId));
     }
 }

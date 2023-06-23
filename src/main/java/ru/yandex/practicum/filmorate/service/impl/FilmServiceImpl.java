@@ -11,8 +11,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -79,7 +78,24 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public List<Film> getRecommendations(Integer id) {
+        log.debug("Получены рекомендации фильмов по id: {}", id);
+        return filmStorage.getRecommendations(id);
+    }
+
+    @Override
+    public void deleteFilm(Integer filmId) {
+        filmStorage.delete(filmId);
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    @Override
     public Collection<Film> getFilmsByDirectorId(int id, String sortBy) {
+        directorStorage.validationId(id);
         return filmStorage.getFilmsByDirectorId(id, sortBy);
     }
 

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.feed.EventOperation;
 import ru.yandex.practicum.filmorate.model.feed.EventType;
@@ -22,7 +23,7 @@ public class FriendsServiceImpl implements FriendsService {
     private final EventFeedService eventFeedService;
 
     public FriendsServiceImpl(FriendStorage friendStorage,
-                              UserDbStorage userStorage,
+                              @Qualifier("userDbStorage") UserStorage userStorage,
                               EventFeedService eventFeedService) {
         this.friendStorage = friendStorage;
         this.userStorage = userStorage;

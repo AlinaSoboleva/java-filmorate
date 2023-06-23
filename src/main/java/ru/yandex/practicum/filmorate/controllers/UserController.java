@@ -11,8 +11,6 @@ import ru.yandex.practicum.filmorate.service.EventFeedService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.FriendsService;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.service.impl.FriendsServiceImpl;
-import ru.yandex.practicum.filmorate.service.impl.UserServiceImpl;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -27,8 +25,8 @@ public class UserController {
     private final EventFeedService eventFeedService;
     private final FilmService filmService;
 
-    public UserController(UserServiceImpl userService,
-                          FriendsServiceImpl friendsService,
+    public UserController(UserService userService,
+                          FriendsService friendsService,
                           EventFeedService eventFeedService,
                           FilmService filmService) {
         this.userService = userService;

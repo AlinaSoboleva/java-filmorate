@@ -8,29 +8,28 @@ import ru.yandex.practicum.filmorate.model.feed.EventType;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.EventFeedService;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.impl.FilmLikeStorage;
+import ru.yandex.practicum.filmorate.storage.FilmLikeDao;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.impl.FilmLikeStorage;
-import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Service
 public class FilmServiceImpl implements FilmService {
 
     private final FilmStorage filmStorage;
-
     private final UserStorage userStorage;
-
-    private final FilmLikeStorage likeStorage;
+    private final FilmLikeDao likeStorage;
     private final DirectorStorage directorStorage;
     private final EventFeedService eventFeedService;
 
     public FilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage,
-                           UserDbStorage userStorage,
-                           FilmLikeStorage likeStorage,
+                           @Qualifier("userDbStorage") UserStorage userStorage,
+                           @Qualifier("filmLikeStorage") FilmLikeDao likeStorage,
+                           EventFeedService eventFeedService,
                            DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;

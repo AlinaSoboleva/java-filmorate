@@ -46,7 +46,7 @@ public class FilmController {
                                     @RequestParam(value = "genreId", defaultValue = "1", required = false)
                                     @Positive(message = "Некорректное значение count") Integer genreId,
                                     @RequestParam(value = "year", defaultValue = "2000", required = false)
-                                    @Positive(message = "Некорректное значение count")Integer year) {
+                                    @Positive(message = "Некорректное значение count")int year) {
         return filmService.findAllTopFilms(count, genreId, year);
     }
 

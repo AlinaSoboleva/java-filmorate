@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.feed.Event;
 import ru.yandex.practicum.filmorate.model.feed.EventOperation;
 import ru.yandex.practicum.filmorate.model.feed.EventType;
 import ru.yandex.practicum.filmorate.service.EventFeedService;
 import ru.yandex.practicum.filmorate.storage.feed.EventFeedDao;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Instant;
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.List;
 public class EventFeedServiceImpl implements EventFeedService {
 
     private final EventFeedDao eventFeedDao;
+    @Qualifier("userDbStorage")
+    private final UserStorage userStorage;
 
     @Override
     public void saveEvent(EventType eventType,
@@ -39,6 +43,7 @@ public class EventFeedServiceImpl implements EventFeedService {
 
     @Override
     public List<Event> getEventFeedForUser(int userId) {
+        userStorage.validationId(userId);
         return eventFeedDao.getEventFeedForUser(userId);
     }
 }

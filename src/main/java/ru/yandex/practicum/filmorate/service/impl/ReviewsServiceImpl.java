@@ -40,7 +40,6 @@ public class ReviewsServiceImpl implements ReviewsService {
         userStorage.validationId(userId);
         reviewsDao.validationId(reviewId);
         reviewsLikeDao.putLike(reviewId, userId);
-        eventFeedService.saveEvent(EventType.LIKE, EventOperation.ADD, userId, reviewId);
     }
 
     @Override
@@ -48,7 +47,6 @@ public class ReviewsServiceImpl implements ReviewsService {
         userStorage.validationId(userId);
         reviewsDao.validationId(reviewId);
         reviewsLikeDao.putDislike(reviewId, userId);
-        eventFeedService.saveEvent(EventType.LIKE, EventOperation.ADD, userId, reviewId);
     }
 
     @Override
@@ -56,7 +54,6 @@ public class ReviewsServiceImpl implements ReviewsService {
         userStorage.validationId(userId);
         reviewsDao.validationId(reviewId);
         reviewsLikeDao.deleteLike(reviewId, userId);
-        eventFeedService.saveEvent(EventType.LIKE, EventOperation.REMOVE, userId, reviewId);
     }
 
     @Override
@@ -64,7 +61,6 @@ public class ReviewsServiceImpl implements ReviewsService {
         userStorage.validationId(userId);
         reviewsDao.validationId(reviewId);
         reviewsLikeDao.deleteDislike(reviewId, userId);
-        eventFeedService.saveEvent(EventType.LIKE, EventOperation.REMOVE, userId, reviewId);
     }
 
     @Override
@@ -81,20 +77,19 @@ public class ReviewsServiceImpl implements ReviewsService {
         filmStorage.validationId(review.getFilmId());
         userStorage.validationId(review.getUserId());
         reviewsDao.update(review);
-        eventFeedService.saveEvent(EventType.REVIEW, EventOperation.UPDATE, review.getUserId(), review.getReviewId());
-        return reviewsDao.getById(review.getReviewId());
+        Review updated = reviewsDao.getById(review.getReviewId());
+        if (updated != null) {
+            eventFeedService.saveEvent(EventType.REVIEW, EventOperation.UPDATE, updated.getUserId(), review.getReviewId());
+        }
+        return updated;
     }
 
     @Override
     public void delete(int id) {
-        Integer userId = reviewsDao.deleteAndGetUserId(id);
-        if (deleteSuccessful(userId)) {
+        Integer userId = reviewsDao.deleteAndReturnUserId(id);
+        if (userId != null && userId != 0) {
             eventFeedService.saveEvent(EventType.REVIEW, EventOperation.REMOVE, userId, id);
         }
-    }
-
-    private boolean deleteSuccessful(Integer userId) {
-        return null != userId && userId != 0;
     }
 
     @Override

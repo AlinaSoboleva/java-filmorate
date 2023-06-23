@@ -15,5 +15,5 @@ public interface ReviewsDao {
 
     void validationId(Integer id);
 
-    Integer deleteAndGetUserId(Integer id);
+    Integer deleteAndReturnUserId(Integer id);
 }

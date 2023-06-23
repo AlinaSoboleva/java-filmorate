@@ -21,7 +21,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
 import ru.yandex.practicum.filmorate.model.film.Genre;
-import ru.yandex.practicum.filmorate.storage.LikeDao;
+import ru.yandex.practicum.filmorate.storage.FilmLikeDao;
 import ru.yandex.practicum.filmorate.storage.film.GenreDao;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,7 +36,7 @@ class FilmServiceImplTest extends BaseTest {
     private final MpaService mpaService;
 
     private final GenreDao genreDao;
-    private final LikeDao likeDao;
+    private final FilmLikeDao likeDao;
 
     @Test
     void whenDeleteFilmWithLikeGenre_filmIsDeleted() {

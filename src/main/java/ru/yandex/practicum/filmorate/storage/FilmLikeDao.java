@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-public interface LikeDao {
+public interface FilmLikeDao {
 
     void deleteLike(Integer filmId, Integer userId);
 

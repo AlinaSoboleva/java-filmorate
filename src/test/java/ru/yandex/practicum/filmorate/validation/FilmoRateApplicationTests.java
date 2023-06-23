@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.storage.film.impl.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.impl.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.film.impl.MpaStorage;
-import ru.yandex.practicum.filmorate.storage.impl.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.impl.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 
 import java.time.LocalDate;
@@ -27,7 +27,7 @@ class FilmoRateApplicationTests extends BaseTest {
     private final MpaStorage mpaStorage;
 
     private final GenreStorage genreStorage;
-    private final LikeStorage likeStorage;
+    private final FilmLikeStorage likeStorage;
 
 
     @Test

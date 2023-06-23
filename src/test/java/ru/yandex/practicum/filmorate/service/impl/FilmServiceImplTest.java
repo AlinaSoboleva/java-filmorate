@@ -120,7 +120,7 @@ class FilmServiceImplTest extends BaseTest {
         filmService.create(film);
         List<Film> films = filmService.search("DIR", "director");
         assertThat(films.size()).isEqualTo(1);
-        assertThat(films.get(0).getDirectors().get(0).getName()).isEqualTo("DIRECTOR");
+        assertThat(films.get(0).getDirectors().get(0).getName()).isEqualTo("director1");
     }
 
     @Test

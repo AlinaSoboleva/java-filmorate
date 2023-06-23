@@ -108,7 +108,7 @@ public class ReviewsServiceImplTest extends BaseTest {
 
     @Test
     void createWitchANotExistentFilmId() {
-        Review review = new Review("Bad comment", false, 1, 5, 0);
+        Review review = new Review("Bad comment", false, 1, 6, 0);
         assertThrows(FilmIdException.class, () -> reviewsService.create(review));
     }
 

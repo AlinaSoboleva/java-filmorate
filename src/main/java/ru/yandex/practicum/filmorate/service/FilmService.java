@@ -30,6 +30,4 @@ public interface FilmService {
     Collection<Film> getFilmsByDirectorId(int id, String sortBy);
 
     List<Film> search(String query, String by);
-
-    Collection<Film> getFilmsByDirectorId(int id, String sortBy);
 }

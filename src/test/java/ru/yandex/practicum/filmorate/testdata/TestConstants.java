@@ -7,4 +7,7 @@ public class TestConstants {
     public static final int EXISTING_FILM_2_ID = 2;
     public static final int EXISTING_FILM_3_ID = 3;
     public static final int EXISTING_GENRE_ID = 1;
+
+    public static final int EXISTING_REVIEW_ID = 1;
+    public static final int EXISTING_REVIEW_2_ID = 2;
 }

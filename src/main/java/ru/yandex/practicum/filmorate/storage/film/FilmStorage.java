@@ -18,5 +18,5 @@ public interface FilmStorage {
 
     Film getById(Integer id);
 
-    Collection<Film> findAllTopFilms(Integer count, Integer genreId, LocalDate year);
+    Collection<Film> findAllTopFilms(Integer count, Integer genreId, Integer year);
 }

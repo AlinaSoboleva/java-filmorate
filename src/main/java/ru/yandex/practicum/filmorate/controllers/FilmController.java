@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +10,6 @@ import ru.yandex.practicum.filmorate.service.impl.FilmServiceImpl;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
-import java.time.LocalDate;
 import java.util.Collection;
 
 @RestController
@@ -69,13 +67,14 @@ public class FilmController {
         return new ResponseEntity<>(film, HttpStatus.OK);
     }
 
-    /*@GetMapping("/popular")
-    public Collection<Film> getMostPopularsFilms(@RequestParam
-                                                 @Positive(message = "Некорректное значение count") Integer count,
-                                                 @RequestParam
-                                                 @Positive(message = "Некорректное значение count") Integer genreId,
-                                                 @RequestParam
-                                                 @DateTimeFormat(pattern = "yyyy") LocalDate year) {
-        return filmService.getMostPopularsFilms(count, genreId, year);
-    }*/
+    @DeleteMapping("/{filmId}")
+    public void deleteFilm(@PathVariable("filmId") Integer filmId) {
+        filmService.deleteFilm(filmId);
+    }
+
+    @GetMapping("/common")
+    public ResponseEntity<List<Film>> getCommonFilms(@RequestParam("userId") Integer userId,
+                                                     @RequestParam("friendId") Integer friendId) {
+        return ResponseEntity.ok(filmService.getCommonFilms(userId, friendId));
+    }
 }

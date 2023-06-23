@@ -1,9 +1,12 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.user.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.FriendsService;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.service.impl.FriendsServiceImpl;
@@ -13,15 +16,18 @@ import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
     private final FriendsService friendsService;
+    private final FilmService filmService;
 
-    public UserController(UserServiceImpl userService, FriendsServiceImpl friendsService) {
+    public UserController(UserServiceImpl userService, FriendsServiceImpl friendsService, FilmService filmService) {
         this.userService = userService;
         this.friendsService = friendsService;
+        this.filmService = filmService;
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
@@ -66,5 +72,18 @@ public class UserController {
             return new ResponseEntity<>(user, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable("userId") Integer userId) {
+        log.info("Received request to delete user with id={}", userId);
+        userService.deleteUser(userId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> getRecommendations(@PathVariable Integer id) {
+        log.debug("Получен Get запрос users/{id}/recommendations на получение " +
+                "списка рекомендуемых фильмов для пользователя с Id: {}", id);
+        return filmService.getRecommendations(id);
     }
 }

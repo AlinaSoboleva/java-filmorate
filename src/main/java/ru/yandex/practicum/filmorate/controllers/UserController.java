@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.feed.Event;
+import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.service.EventFeedService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.FriendsService;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.service.impl.FriendsServiceImpl;
@@ -23,13 +25,16 @@ public class UserController {
     private final UserService userService;
     private final FriendsService friendsService;
     private final EventFeedService eventFeedService;
+    private final FilmService filmService;
 
     public UserController(UserServiceImpl userService,
                           FriendsServiceImpl friendsService,
-                          EventFeedService eventFeedService) {
+                          EventFeedService eventFeedService,
+                          FilmService filmService) {
         this.userService = userService;
         this.friendsService = friendsService;
         this.eventFeedService = eventFeedService;
+        this.filmService = filmService;
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
@@ -80,5 +85,18 @@ public class UserController {
     public ResponseEntity<List<Event>> getEventFeed(@PathVariable("id") Integer id) {
         log.info("Received GET request for event feed of user with id={}", id);
         return ResponseEntity.ok(eventFeedService.getEventFeedForUser(id));
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable("userId") Integer userId) {
+        log.info("Received request to delete user with id={}", userId);
+        userService.deleteUser(userId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> getRecommendations(@PathVariable Integer id) {
+        log.debug("Получен Get запрос users/{id}/recommendations на получение " +
+                "списка рекомендуемых фильмов для пользователя с Id: {}", id);
+        return filmService.getRecommendations(id);
     }
 }

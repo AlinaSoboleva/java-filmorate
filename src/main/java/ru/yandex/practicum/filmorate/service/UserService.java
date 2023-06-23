@@ -13,4 +13,6 @@ public interface UserService {
     User update(User user);
 
     User getUserById(Integer id);
+
+    void deleteUser(Integer userId);
 }

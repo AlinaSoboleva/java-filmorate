@@ -190,9 +190,7 @@ public class FilmDbStorage implements FilmStorage {
         for (Genre genre : genres) {
             genreStorage.createGenreByFilm(genre.getId(), film.getId());
         }
-        if (film.getDirectors() == null || film.getDirectors().isEmpty()) {
-            directorStorage.deleteDirectorByFilm(film);
-        }
+        directorStorage.deleteDirectorByFilm(film);
         setDirectors(film);
         return true;
     }

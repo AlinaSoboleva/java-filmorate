@@ -98,7 +98,7 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public void setDirectorsInDb(Film film) {
         List<Director> directors = film.getDirectors();
-        String sql = "MERGE INTO FILM_DIRECTOR KEY (FILM_ID, DIRECTOR_ID) VALUES (?, ?);";
+        String sql = "INSERT INTO FILM_DIRECTOR (FILM_ID, DIRECTOR_ID) VALUES (?, ?);";
         for (Director director : directors) {
             jdbcTemplate.update(sql, film.getId(), director.getId());
         }

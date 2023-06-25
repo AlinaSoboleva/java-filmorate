@@ -221,7 +221,7 @@ class FilmServiceImplTest extends BaseTest {
         filmService.create(film);
         List<Film> films = filmService.search("DIR", "director");
         assertThat(films.size()).isEqualTo(1);
-        assertThat(films.get(0).getDirectors().get(0).getName()).isEqualTo("DIRECTOR");
+        assertThat(films.get(0).getDirectors().get(0).getName()).isEqualTo("director1");
     }
 
     @Test
@@ -235,5 +235,19 @@ class FilmServiceImplTest extends BaseTest {
 
         assertThat(films.size()).isEqualTo(4);
         assertThat(films.get(0).getId()).isEqualTo(EXISTING_FILM_3_ID);
+    }
+
+    @Test
+    void whenUpdateFilmWithDirectors_filmHasNewDirectors() {
+        Film byId = filmService.getById(EXISTING_FILM_ID);
+        byId.getDirectors().add(directorService.getDirectorById(EXISTING_DIRECTOR_ID));
+        Film toUpdate = filmService.update(byId);
+        List<Director> newDirectors = new ArrayList<>();
+        newDirectors.add(directorService.getDirectorById(EXISTING_DIRECTOR_2_ID));
+        toUpdate.setDirectors(newDirectors);
+        Film updated = filmService.update(toUpdate);
+        List<Director> directors = filmService.getById(updated.getId()).getDirectors();
+        assertThat(directors.size()).isEqualTo(1);
+        assertThat(directors.get(0).getId()).isEqualTo(EXISTING_DIRECTOR_2_ID);
     }
 }

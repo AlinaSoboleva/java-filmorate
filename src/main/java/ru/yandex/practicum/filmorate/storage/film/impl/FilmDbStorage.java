@@ -8,9 +8,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
+import ru.yandex.practicum.filmorate.Exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.Exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.Genre;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.GenreDao;
 import ru.yandex.practicum.filmorate.storage.film.MpaDao;
@@ -28,11 +30,13 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MpaDao mpaStorage;
     private final GenreDao genreStorage;
+    private final DirectorStorage directorStorage;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, GenreStorage genreStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, GenreStorage genreStorage, DirectorStorage directorStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaStorage = mpaStorage;
         this.genreStorage = genreStorage;
+        this.directorStorage = directorStorage;
     }
 
     @Override
@@ -118,15 +122,15 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM FILMS f " +
                 "LEFT JOIN LIKES l ON l.film_id = f.film_id " +
                 "WHERE f.film_id IN (" +
-                    "SELECT f.film_id film_id " +
-                    "FROM FILMS ff " +
-                    "LEFT JOIN LIKES ll ON ff.film_id = ll.film_id " +
-                    "WHERE ll.user_id = ? " +
-                    "INTERSECT " +
-                    "SELECT fff.film_id " +
-                    "FROM FILMS fff " +
-                    "LEFT JOIN LIKES lll ON fff.film_id = lll.film_id " +
-                    "WHERE lll.user_id = ?" +
+                "SELECT f.film_id film_id " +
+                "FROM FILMS ff " +
+                "LEFT JOIN LIKES ll ON ff.film_id = ll.film_id " +
+                "WHERE ll.user_id = ? " +
+                "INTERSECT " +
+                "SELECT fff.film_id " +
+                "FROM FILMS fff " +
+                "LEFT JOIN LIKES lll ON fff.film_id = lll.film_id " +
+                "WHERE lll.user_id = ?" +
                 ") " +
                 "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
                 "ORDER BY l_cnt DESC";
@@ -147,6 +151,38 @@ public class FilmDbStorage implements FilmStorage {
             );
             throw new UserIdException(msg);
         }
+    }
+
+    @Override
+    public List<Film> search(String query, String by) {
+        StringBuilder sql = new StringBuilder("SELECT f.film_id, " +
+                "f.name, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "f. rating_id," +
+                "d.director_id " +
+                "FROM films f " +
+                "LEFT JOIN likes l ON f.film_id=l.film_id " +
+                "LEFT JOIN film_director fd ON f.film_id=fd.film_id " +
+                "LEFT JOIN directors d ON fd.director_id=d.director_id ");
+        switch (by) {
+            case ("title"):
+                sql.append("WHERE f.name LIKE CONCAT('%',?,'%') ");
+                break;
+            case ("director"):
+                sql.append("WHERE d.name LIKE CONCAT('%',?,'%') ");
+                break;
+            case ("title,director"):
+                sql.append("WHERE f.name LIKE CONCAT('%',?1,'%') OR d.name LIKE CONCAT('%',?1,'%') ");
+                break;
+            case ("director,title"):
+                sql.append("WHERE d.name LIKE CONCAT('%',?1,'%') OR f.name LIKE CONCAT('%',?1,'%') ");
+                break;
+        }
+        sql.append("GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, d.director_id " +
+                "ORDER BY COUNT(L.FILM_ID) DESC ");
+        return jdbcTemplate.query(sql.toString(), ((rs, rowNum) -> makeFilm(rs)), query);
     }
 
 
@@ -177,6 +213,7 @@ public class FilmDbStorage implements FilmStorage {
             }
             film.getGenres().clear();
             film.getGenres().addAll(newGenres);
+            setDirectors(film);
             log.info("Фильм   {} сохранен", film);
         }
     }
@@ -196,6 +233,8 @@ public class FilmDbStorage implements FilmStorage {
         for (Genre genre : genres) {
             genreStorage.createGenreByFilm(genre.getId(), film.getId());
         }
+        directorStorage.deleteDirectorByFilm(film);
+        setDirectors(film);
         return true;
     }
 
@@ -216,6 +255,19 @@ public class FilmDbStorage implements FilmStorage {
         validationId(id);
         String sql = "SELECT * FROM FILMS WHERE film_id=?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), id).get(0);
+    }
+
+    @Override
+    public Collection<Film> getFilmsByDirectorId(int id, String sortBy) {
+        String sql;
+        if (sortBy.equals("likes")) {
+            sql = "SELECT F.* FROM FILMS F JOIN FILM_DIRECTOR FD ON F.FILM_ID = FD.FILM_ID LEFT JOIN LIKES L ON F.FILM_ID = L.FILM_ID WHERE FD.DIRECTOR_ID = ? GROUP BY F.FILM_ID ORDER BY COUNT(L.FILM_ID) DESC;";
+        } else if (sortBy.equals("year")) {
+            sql = "SELECT * FROM FILMS WHERE FILM_ID IN (SELECT FILM_ID FROM FILM_DIRECTOR WHERE DIRECTOR_ID = ?) ORDER BY FILMS.RELEASE_DATE;";
+        } else {
+            throw new IncorrectParameterException("Неверный параметр запроса");
+        }
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), id);
     }
 
     @Override
@@ -240,6 +292,7 @@ public class FilmDbStorage implements FilmStorage {
         film.setId(id);
         setMpa(film, mpa);
         setGenre(film);
+        setDirectors(film);
         return film;
     }
 
@@ -250,5 +303,11 @@ public class FilmDbStorage implements FilmStorage {
     private void setGenre(Film film) {
         film.getGenres().clear();
         film.getGenres().addAll(genreStorage.getGenresByFilm(film.getId()));
+    }
+
+    private void setDirectors(Film film) {
+        directorStorage.setDirectorsInDb(film);
+        film.getDirectors().clear();
+        film.getDirectors().addAll(directorStorage.getDirectorsByFilm(film.getId()));
     }
 }

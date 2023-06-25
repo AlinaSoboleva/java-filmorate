@@ -4,29 +4,34 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.feed.Event;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.user.User;
+import ru.yandex.practicum.filmorate.service.EventFeedService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.FriendsService;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.service.impl.FriendsServiceImpl;
-import ru.yandex.practicum.filmorate.service.impl.UserServiceImpl;
 
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
     private final UserService userService;
     private final FriendsService friendsService;
+    private final EventFeedService eventFeedService;
     private final FilmService filmService;
 
-    public UserController(UserServiceImpl userService, FriendsServiceImpl friendsService, FilmService filmService) {
+    public UserController(UserService userService,
+                          FriendsService friendsService,
+                          EventFeedService eventFeedService,
+                          FilmService filmService) {
         this.userService = userService;
         this.friendsService = friendsService;
+        this.eventFeedService = eventFeedService;
         this.filmService = filmService;
     }
 
@@ -72,6 +77,12 @@ public class UserController {
             return new ResponseEntity<>(user, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/feed")
+    public ResponseEntity<List<Event>> getEventFeed(@PathVariable("id") Integer id) {
+        log.info("Received GET request for event feed of user with id={}", id);
+        return ResponseEntity.ok(eventFeedService.getEventFeedForUser(id));
     }
 
     @DeleteMapping("/{userId}")

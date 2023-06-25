@@ -3,11 +3,15 @@ package ru.yandex.practicum.filmorate.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.feed.EventOperation;
+import ru.yandex.practicum.filmorate.model.feed.EventType;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.service.EventFeedService;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmLikeDao;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.impl.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
@@ -18,17 +22,21 @@ import java.util.*;
 public class FilmServiceImpl implements FilmService {
 
     private final FilmStorage filmStorage;
-
     private final UserStorage userStorage;
-
-    private final LikeStorage likeStorage;
+    private final FilmLikeDao likeStorage;
+    private final DirectorStorage directorStorage;
+    private final EventFeedService eventFeedService;
 
     public FilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage,
-                           UserDbStorage userStorage,
-                           LikeStorage likeStorage) {
+                           @Qualifier("userDbStorage") UserStorage userStorage,
+                           @Qualifier("filmLikeStorage") FilmLikeDao likeStorage,
+                           EventFeedService eventFeedService,
+                           DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.likeStorage = likeStorage;
+        this.directorStorage = directorStorage;
+        this.eventFeedService = eventFeedService;
     }
 
     @Override
@@ -55,6 +63,10 @@ public class FilmServiceImpl implements FilmService {
         filmStorage.validationId(filmId);
         userStorage.validationId(userId);
         likeStorage.deleteLike(filmId, userId);
+        eventFeedService.saveEvent(EventType.LIKE,
+                EventOperation.REMOVE,
+                userId,
+                filmId);
     }
 
     @Override
@@ -62,6 +74,10 @@ public class FilmServiceImpl implements FilmService {
         userStorage.validationId(userId);
         filmStorage.validationId(filmId);
         likeStorage.putLike(filmId, userId);
+        eventFeedService.saveEvent(EventType.LIKE,
+                EventOperation.ADD,
+                userId,
+                filmId);
     }
 
     @Override
@@ -99,5 +115,16 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Film> getCommonFilms(Integer userId, Integer friendId) {
         return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    @Override
+    public Collection<Film> getFilmsByDirectorId(int id, String sortBy) {
+        directorStorage.validationId(id);
+        return filmStorage.getFilmsByDirectorId(id, sortBy);
+    }
+
+    @Override
+    public List<Film> search(String query, String by) {
+        return filmStorage.search(query, by);
     }
 }

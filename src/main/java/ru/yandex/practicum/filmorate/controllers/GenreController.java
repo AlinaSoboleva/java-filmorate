@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.film.Genre;
 import ru.yandex.practicum.filmorate.service.GenreService;
-import ru.yandex.practicum.filmorate.service.impl.GenreServiceImpl;
 
 import java.util.Collection;
 
@@ -18,7 +17,7 @@ public class GenreController {
 
     private final GenreService genreService;
 
-    public GenreController(GenreServiceImpl genreService) {
+    public GenreController(GenreService genreService) {
         this.genreService = genreService;
     }
 

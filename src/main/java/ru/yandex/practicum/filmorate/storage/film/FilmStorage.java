@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 public interface FilmStorage {
+
     void create(Film film);
 
     boolean update(Film film);
@@ -26,6 +27,10 @@ public interface FilmStorage {
     Collection<Film> findAllTopIfYear(Integer count, Integer year);
 
     Collection<Film> findTopFilms(Integer count);
+
+    Collection<Film> getFilmsByDirectorId(int id, String sortBy);
+
+    List<Film> search(String query, String by);
 
     List<Film> getCommonFilms(Integer userId, Integer friendId);
 

@@ -42,9 +42,18 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> getFilmsByDirectorId(int id, String sortBy) {
+        return null;
+    }
+
+    @Override
+    public List<Film> search(String query, String by) {
+        return null;
+    }
+
+    @Override
     public List<Film> getCommonFilms(Integer userId, Integer friendId) {
-        // stub
-        return Collections.emptyList();
+        return null;
     }
 
     @Override

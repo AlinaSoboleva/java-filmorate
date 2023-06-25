@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.impl.FilmServiceImpl;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -20,7 +19,7 @@ public class FilmController {
 
     private final FilmService filmService;
 
-    public FilmController(FilmServiceImpl filmService) {
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
@@ -66,6 +65,19 @@ public class FilmController {
             return new ResponseEntity<>(film, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(film, HttpStatus.OK);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public Collection<Film> getFilmsByDirectorId(
+            @PathVariable Integer directorId,
+            @RequestParam(value = "sortBy", defaultValue = "year") String sortBy) {
+        return filmService.getFilmsByDirectorId(directorId, sortBy);
+    }
+
+    @GetMapping("/search")
+    public Collection<Film> search(@RequestParam(required = false) String query,
+                                   @RequestParam(required = false) String by) {
+        return filmService.search(query, by);
     }
 
     @DeleteMapping("/{filmId}")

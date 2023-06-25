@@ -122,7 +122,7 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM FILMS f " +
                 "LEFT JOIN LIKES l ON l.film_id = f.film_id " +
                 "WHERE f.film_id IN (" +
-                "SELECT f.film_id film_id " +
+                "SELECT ff.film_id film_id " +
                 "FROM FILMS ff " +
                 "LEFT JOIN LIKES ll ON ff.film_id = ll.film_id " +
                 "WHERE ll.user_id = ? " +

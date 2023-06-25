@@ -29,10 +29,11 @@ public class FriendStorage implements FriendDao {
     }
 
     @Override
-    public void deleteFriend(Integer id, Integer friendId) {
+    public int deleteFriend(Integer id, Integer friendId) {
         String sql = "DELETE FROM FRIENDS WHERE USER_ID = ? AND FRIEND_ID = ?";
-        jdbcTemplate.update(sql, id, friendId);
+        int rowsChanged = jdbcTemplate.update(sql, id, friendId);
         log.info("Пользователь с id {} удаляет пользователя с id {}", id, friendId);
+        return rowsChanged;
     }
 
     @Override

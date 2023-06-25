@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.film.Review;
 import ru.yandex.practicum.filmorate.service.ReviewsService;
-import ru.yandex.practicum.filmorate.service.impl.ReviewsServiceImpl;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -18,7 +17,7 @@ public class ReviewsController {
 
     private final ReviewsService reviewsService;
 
-    public ReviewsController(ReviewsServiceImpl reviewsService) {
+    public ReviewsController(ReviewsService reviewsService) {
         this.reviewsService = reviewsService;
     }
 

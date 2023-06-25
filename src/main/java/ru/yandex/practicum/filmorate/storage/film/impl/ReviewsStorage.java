@@ -27,10 +27,13 @@ public class ReviewsStorage implements ReviewsDao {
     }
 
     @Override
-    public void delete(Integer id) {
+    public Integer deleteAndReturnUserId(Integer id) {
         validationId(id);
+        String userIdSql = "SELECT USER_ID FROM REVIEWS WHERE ID = ?";
+        Integer userId = jdbcTemplate.queryForObject(userIdSql, Integer.class, id);
         String sql = "DELETE FROM REVIEWS WHERE ID = ?";
         jdbcTemplate.update(sql, id);
+        return userId;
     }
 
     public Review create(Review review) {

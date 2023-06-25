@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.impl.FilmServiceImpl;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -20,7 +19,7 @@ public class FilmController {
 
     private final FilmService filmService;
 
-    public FilmController(FilmServiceImpl filmService) {
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 

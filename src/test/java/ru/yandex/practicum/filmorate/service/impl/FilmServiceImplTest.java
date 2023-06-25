@@ -24,22 +24,15 @@ import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.Mpa;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.service.DirectorService;
-import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.MpaService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-
-import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
 import ru.yandex.practicum.filmorate.model.film.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmLikeDao;
 import ru.yandex.practicum.filmorate.storage.film.GenreDao;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ru.yandex.practicum.filmorate.testdata.TestConstants.*;
 
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -211,7 +204,7 @@ class FilmServiceImplTest extends BaseTest {
 
     @Test
     void whenThereIsOnlyOneFilmWithDirector() {
-        Film film = new Film("NewFilm", "Desc", LocalDate.of(2023, 06, 22), 180);
+        Film film = new Film("NewFilm", "Desc", LocalDate.of(2023, 6, 22), 180);
         Director director = directorService.getDirectorById(1);
         Mpa mpa = mpaService.getMpaById(1);
         List<Director> directors = new ArrayList<>();

@@ -37,7 +37,7 @@ public class FilmServiceImpl implements FilmService {
         return filmStorage.getById(id);
     }
 
-    @Override
+    @Override // Не придумал ничего лучше, чем разбить на несколько методов в DAO
     public Collection<Film> findAllTopFilms(Integer count, Integer genreId, Integer year) {
         if (genreId == null && year == null) {
             return filmStorage.findTopFilms(count);

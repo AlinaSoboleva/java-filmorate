@@ -48,7 +48,7 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE genre_id = ? and EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
                 "GROUP BY F.FILM_ID " +
                 "ORDER BY COUNT(L.FILM_ID) " +
-                "DESC LIMIT ?";
+                "DESC , f.FILM_ID LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), genreId, year, count);
     }
 
@@ -61,7 +61,7 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE genre_id = ? " +
                 "GROUP BY F.FILM_ID " +
                 "ORDER BY COUNT(L.FILM_ID) " +
-                "DESC LIMIT ?";
+                "DESC , f.FILM_ID LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), genreId, count);
     }
 
@@ -73,7 +73,7 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
                 "GROUP BY F.FILM_ID " +
                 "ORDER BY COUNT(L.FILM_ID) " +
-                "DESC LIMIT ?";
+                "DESC , f.FILM_ID LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), year, count);
     }
 
@@ -82,7 +82,7 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT * " +
                 "FROM FILMS AS f " +
                 "LEFT JOIN LIKES AS L on F.FILM_ID = L.FILM_ID " +
-                "GROUP BY F.FILM_ID " +
+                "GROUP BY F.FILM_ID, L.USER_ID " +
                 "ORDER BY COUNT(L.FILM_ID) " +
                 "DESC LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), count);
@@ -293,6 +293,7 @@ public class FilmDbStorage implements FilmStorage {
         setMpa(film, mpa);
         setGenre(film);
         setDirectors(film);
+        setRate(film);
         return film;
     }
 
@@ -309,5 +310,13 @@ public class FilmDbStorage implements FilmStorage {
         directorStorage.setDirectorsInDb(film);
         film.getDirectors().clear();
         film.getDirectors().addAll(directorStorage.getDirectorsByFilm(film.getId()));
+    }
+
+    private void setRate(Film film) {
+        String sql = "SELECT COUNT(USER_ID) FROM LIKES WHERE FILM_ID = ?";
+        SqlRowSet resultSet = jdbcTemplate.queryForRowSet(sql, film.getId());
+        if (resultSet.next()) {
+            film.setRate(resultSet.getInt("count(user_id)"));
+        }
     }
 }

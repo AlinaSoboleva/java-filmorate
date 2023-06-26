@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -7,12 +8,9 @@ import ru.yandex.practicum.filmorate.storage.FilmLikeDao;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class FilmLikeStorage implements FilmLikeDao {
     private final JdbcTemplate jdbcTemplate;
-
-    public FilmLikeStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public void deleteLike(Integer filmId, Integer userId) {

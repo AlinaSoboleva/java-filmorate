@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -15,12 +16,9 @@ import java.util.List;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class GenreStorage implements GenreDao {
     private final JdbcTemplate jdbcTemplate;
-
-    public GenreStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public void createGenreByFilm(int genreId, int filmId) {

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,21 +20,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final FriendsService friendsService;
     private final EventFeedService eventFeedService;
     private final FilmService filmService;
-
-    public UserController(UserService userService,
-                          FriendsService friendsService,
-                          EventFeedService eventFeedService,
-                          FilmService filmService) {
-        this.userService = userService;
-        this.friendsService = friendsService;
-        this.eventFeedService = eventFeedService;
-        this.filmService = filmService;
-    }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {

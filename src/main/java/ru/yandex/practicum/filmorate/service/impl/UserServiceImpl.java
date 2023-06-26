@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -11,13 +13,11 @@ import java.util.Collection;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    @Qualifier("userDbStorage")
     private final UserStorage userStorage;
-
-    public UserServiceImpl(UserDbStorage userStorage) {
-        this.userStorage = userStorage;
-    }
 
     @Override
     public Collection<User> findAll() {

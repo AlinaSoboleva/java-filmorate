@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.feed.EventOperation;
 import ru.yandex.practicum.filmorate.model.feed.EventType;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.film.SearchBy;
 import ru.yandex.practicum.filmorate.service.EventFeedService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.FilmLikeDao;
@@ -18,25 +20,17 @@ import java.util.*;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FilmServiceImpl implements FilmService {
 
+    @Qualifier("filmDbStorage")
     private final FilmStorage filmStorage;
+    @Qualifier("userDbStorage")
     private final UserStorage userStorage;
+    @Qualifier("filmLikeStorage")
     private final FilmLikeDao likeStorage;
     private final DirectorStorage directorStorage;
     private final EventFeedService eventFeedService;
-
-    public FilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage,
-                           @Qualifier("userDbStorage") UserStorage userStorage,
-                           @Qualifier("filmLikeStorage") FilmLikeDao likeStorage,
-                           EventFeedService eventFeedService,
-                           DirectorStorage directorStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-        this.likeStorage = likeStorage;
-        this.directorStorage = directorStorage;
-        this.eventFeedService = eventFeedService;
-    }
 
     @Override
     public Film getById(Integer id) {
@@ -122,7 +116,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> search(String query, String by) {
+    public List<Film> search(String query, SearchBy by) {
         return filmStorage.search(query, by);
     }
 }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,13 +19,10 @@ import java.util.Objects;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class ReviewsStorage implements ReviewsDao {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public ReviewsStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Integer deleteAndReturnUserId(Integer id) {

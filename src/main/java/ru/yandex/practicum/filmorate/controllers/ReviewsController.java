@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +14,10 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/reviews")
+@RequiredArgsConstructor
 public class ReviewsController {
 
     private final ReviewsService reviewsService;
-
-    public ReviewsController(ReviewsService reviewsService) {
-        this.reviewsService = reviewsService;
-    }
 
     @PutMapping("/{id}/like/{userId}")
     public void putLike(@PathVariable Integer id, @PathVariable Integer userId) {

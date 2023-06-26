@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.film.SearchBy;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -15,13 +17,10 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
 
     private final FilmService filmService;
-
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
 
     @PutMapping("/{id}/like/{userId}")
     public void putLike(@PathVariable Integer id, @PathVariable Integer userId) {
@@ -76,8 +75,8 @@ public class FilmController {
 
     @GetMapping("/search")
     public Collection<Film> search(@RequestParam(required = false) String query,
-                                   @RequestParam(required = false) String by) {
-        return filmService.search(query, by);
+                                   @RequestParam(required = false) @Valid String by) {
+        return filmService.search(query, SearchBy.fromString(by));
     }
 
     @DeleteMapping("/{filmId}")

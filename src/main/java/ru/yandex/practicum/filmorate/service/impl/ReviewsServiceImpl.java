@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.feed.EventOperation;
@@ -15,25 +16,16 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewsServiceImpl implements ReviewsService {
 
     private final ReviewsDao reviewsDao;
+    @Qualifier("filmDbStorage")
     private final FilmStorage filmStorage;
+    @Qualifier("userDbStorage")
     private final UserStorage userStorage;
     private final ReviewsLikeDao reviewsLikeDao;
     private final EventFeedService eventFeedService;
-
-    public ReviewsServiceImpl(ReviewsDao reviewsDao,
-                              @Qualifier("filmDbStorage") FilmStorage filmStorage,
-                              @Qualifier("userDbStorage") UserStorage userStorage,
-                              ReviewsLikeDao reviewsLikeDao,
-                              EventFeedService eventFeedService) {
-        this.reviewsDao = reviewsDao;
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-        this.reviewsLikeDao = reviewsLikeDao;
-        this.eventFeedService = eventFeedService;
-    }
 
     @Override
     public void putLike(Integer reviewId, Integer userId) {

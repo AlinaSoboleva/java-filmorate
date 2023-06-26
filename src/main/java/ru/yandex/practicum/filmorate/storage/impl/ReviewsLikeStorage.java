@@ -1,28 +1,26 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.storage.ReviewsLikeDao;
 import ru.yandex.practicum.filmorate.storage.film.ReviewsDao;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
+
 
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ReviewsLikeStorage implements ReviewsLikeDao {
 
     private final JdbcTemplate jdbcTemplate;
+    @Qualifier("userDbStorage")
     private final UserStorage userStorage;
     private final ReviewsDao reviewsDao;
-
-    public ReviewsLikeStorage(JdbcTemplate jdbcTemplate, UserDbStorage userStorage, ReviewsDao reviewsDao) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.userStorage = userStorage;
-        this.reviewsDao = reviewsDao;
-    }
 
     @Override
     public void putLike(Integer reviewId, Integer userId) {

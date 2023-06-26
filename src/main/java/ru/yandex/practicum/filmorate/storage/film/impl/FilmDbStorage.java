@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +13,7 @@ import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.Genre;
+import ru.yandex.practicum.filmorate.model.film.SearchBy;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.GenreDao;
@@ -25,19 +27,13 @@ import java.util.*;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final MpaDao mpaStorage;
     private final GenreDao genreStorage;
     private final DirectorStorage directorStorage;
-
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, GenreStorage genreStorage, DirectorStorage directorStorage) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.mpaStorage = mpaStorage;
-        this.genreStorage = genreStorage;
-        this.directorStorage = directorStorage;
-    }
 
     @Override
     public Collection<Film> findAllTopFilms(Integer count, Integer genreId, Integer year) {
@@ -154,7 +150,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> search(String query, String by) {
+    public List<Film> search(String query, SearchBy by) {
         StringBuilder sql = new StringBuilder("SELECT f.film_id, " +
                 "f.name, " +
                 "f.description, " +
@@ -167,17 +163,14 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN film_director fd ON f.film_id=fd.film_id " +
                 "LEFT JOIN directors d ON fd.director_id=d.director_id ");
         switch (by) {
-            case ("title"):
+            case TITLE:
                 sql.append("WHERE f.name LIKE CONCAT('%',?,'%') ");
                 break;
-            case ("director"):
+            case DIRECTOR:
                 sql.append("WHERE d.name LIKE CONCAT('%',?,'%') ");
                 break;
-            case ("title,director"):
+            case TITLE_OR_DIRECTOR:
                 sql.append("WHERE f.name LIKE CONCAT('%',?1,'%') OR d.name LIKE CONCAT('%',?1,'%') ");
-                break;
-            case ("director,title"):
-                sql.append("WHERE d.name LIKE CONCAT('%',?1,'%') OR f.name LIKE CONCAT('%',?1,'%') ");
                 break;
         }
         sql.append("GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, d.director_id " +

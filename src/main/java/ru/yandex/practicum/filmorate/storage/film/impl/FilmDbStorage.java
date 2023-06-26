@@ -2,8 +2,10 @@ package ru.yandex.practicum.filmorate.storage.film.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -86,7 +88,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getRecommendations(Integer id) {
-        String maxUserIntersection = " (SELECT l.user_id u_id, " +
+        String maxUserIntersection = "SELECT l.user_id u_id, " +
                 "COUNT(l.user_id) cnt " +
                 "FROM Likes l WHERE l.user_id <> ? " + // ID остальных пользователей
                 "AND l.film_id IN (" + // которые поставили лайки тем же фильмам, что и пользователь в запросе
@@ -94,16 +96,26 @@ public class FilmDbStorage implements FilmStorage {
                 " Likes ll WHERE ll.user_id = ?)" +
                 "GROUP BY l.user_id " + // группировка, так как используем аггрегирующую функцию
                 "ORDER BY cnt DESC " + // сортируем по убыванию
-                "LIMIT 1) its "; // выбираем максимальное совпадение
+                "LIMIT 1 "; // выбираем максимальное совпадение
+
+        Integer recommendedUserId = jdbcTemplate.query(maxUserIntersection, rs -> {
+            if (rs.next()) {
+                return rs.getInt("u_id");
+            } else {
+                return null;
+            }
+        }, id, id);
+        if (recommendedUserId == null) {
+            return Collections.emptyList();
+        }
 
         String recommendedFilmsSql = "SELECT * FROM Films fm " + // все фильмы
                 "LEFT JOIN Likes lk ON fm.film_id = lk.film_id " +
-                "WHERE lk.user_id IN (" + // которые пролайкал пользователь с максимальным пересечением по лайкам
-                "SELECT u_id FROM " + maxUserIntersection + ") " +
+                "WHERE lk.user_id = ? " +
                 "AND lk.film_id NOT IN (" + // и которым наш пользователь не ставил лайк
                 "SELECT llk.film_id FROM LIKES llk " +
                 "WHERE llk.user_id = ?)";
-        return jdbcTemplate.query(recommendedFilmsSql, (rs, rowNum) -> makeFilm(rs), id, id, id);
+        return jdbcTemplate.query(recommendedFilmsSql, (rs, rowNum) -> makeFilm(rs), recommendedUserId, id);
     }
 
     @Override

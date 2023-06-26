@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.testdata;
 
+import ru.yandex.practicum.filmorate.model.film.Sort;
+
 public class TestConstants {
     public static final int EXISTING_DIRECTOR_ID = 1;
     public static final int EXISTING_DIRECTOR_2_ID = 2;
@@ -15,6 +17,6 @@ public class TestConstants {
     public static final String EXISTING_FILM_5_NAME = "OLD SCHOOL";
     public static final int EXISTING_REVIEW_ID = 1;
     public static final int EXISTING_REVIEW_2_ID = 2;
-    public static final String SORT_BY_YEAR = "year";
-    public static final String SORT_BY_LIKES = "likes";
+    public static final Sort SORT_BY_YEAR = Sort.year;
+    public static final Sort SORT_BY_LIKES = Sort.likes;
 }

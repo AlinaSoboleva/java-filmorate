@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.SearchBy;
+import ru.yandex.practicum.filmorate.model.film.Sort;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +29,7 @@ public interface FilmService {
 
     List<Film> getRecommendations(Integer id);
 
-    Collection<Film> getFilmsByDirectorId(int id, String sortBy);
+    Collection<Film> getFilmsByDirectorId(int id, Sort sort);
 
     List<Film> search(String query, SearchBy by);
 }

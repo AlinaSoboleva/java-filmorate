@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.model.film;
 
+import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
+
 public enum SearchBy {
     TITLE,
     DIRECTOR,
@@ -13,6 +15,6 @@ public enum SearchBy {
         } else if (value.equalsIgnoreCase("director,title") || value.equalsIgnoreCase("title,director")) {
             return TITLE_OR_DIRECTOR;
         }
-        throw new IllegalArgumentException("Не корректный запрос" + value);
+        throw new IncorrectParameterException("Не корректный запрос " + value);
     }
 }

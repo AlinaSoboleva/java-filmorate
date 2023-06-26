@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.SearchBy;
+import ru.yandex.practicum.filmorate.model.film.Sort;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -69,8 +70,8 @@ public class FilmController {
     @GetMapping("/director/{directorId}")
     public Collection<Film> getFilmsByDirectorId(
             @PathVariable Integer directorId,
-            @RequestParam(value = "sortBy", defaultValue = "year") String sortBy) {
-        return filmService.getFilmsByDirectorId(directorId, sortBy);
+            @RequestParam(value = "sortBy", defaultValue = "year") Sort sort) {
+        return filmService.getFilmsByDirectorId(directorId, sort);
     }
 
     @GetMapping("/search")

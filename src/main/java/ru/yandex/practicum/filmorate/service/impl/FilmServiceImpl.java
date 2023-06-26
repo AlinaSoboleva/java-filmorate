@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.feed.EventOperation;
 import ru.yandex.practicum.filmorate.model.feed.EventType;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.SearchBy;
+import ru.yandex.practicum.filmorate.model.film.Sort;
 import ru.yandex.practicum.filmorate.service.EventFeedService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.FilmLikeDao;
@@ -16,7 +17,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
-import java.util.*;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -110,9 +111,9 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public Collection<Film> getFilmsByDirectorId(int id, String sortBy) {
+    public Collection<Film> getFilmsByDirectorId(int id, Sort sort) {
         directorStorage.validationId(id);
-        return filmStorage.getFilmsByDirectorId(id, sortBy);
+        return filmStorage.getFilmsByDirectorId(id, sort);
     }
 
     @Override

@@ -24,7 +24,7 @@ public class EventFeedDaoImpl implements EventFeedDao {
     public void saveEvent(Event event) {
         String sql = "INSERT INTO Events(TIMESTAMP, USER_ID, EVENT_TYPE, OPERATION, ENTITY_ID) " +
                      "VALUES (?, ?, ?, ?, ?)";
-        log.debug("Executing SQL statement {} to save Event {}", sql, event);
+        log.debug("Выполнение иструкции SQL {} для сохранения события {}", sql, event);
         jdbcTemplate.update(sql,
                 event.getTimestamp(),
                 event.getUserId(),
@@ -37,7 +37,7 @@ public class EventFeedDaoImpl implements EventFeedDao {
     public List<Event> getEventFeedForUser(int userId) {
         String sql = "SELECT * FROM Events WHERE user_id = ?";
         List<Event> events = jdbcTemplate.query(sql, this::makeEvent, userId);
-        log.debug("Retrieved events of user with id={}. List of events={}", userId, events);
+        log.debug("Извлечение событий пользователя с id {}. Лист событий: {}", userId, events);
         return events;
     }
 

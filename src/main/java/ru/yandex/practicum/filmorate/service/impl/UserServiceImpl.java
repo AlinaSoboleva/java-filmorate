@@ -35,7 +35,6 @@ public class UserServiceImpl implements UserService {
     public User update(User user) {
         if (userStorage.update(user)) {
             return user;
-            //return new ResponseEntity<>(user, HttpStatus.OK);
         }
         log.debug("Пользователь с id: {} не найден", user.getId());
         return null;

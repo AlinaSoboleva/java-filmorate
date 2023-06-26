@@ -135,17 +135,17 @@ public class FilmDbStorage implements FilmStorage {
                 "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
                 "ORDER BY l_cnt DESC";
         log.info(
-                "Executing SQL query=[{}] to retrieve films liked by user with id={}",
+                "Выполнение SQL запроса [{}] для получения фильмов, понравившися пользователю с id {}",
                 sql,
                 userId
         );
         try {
             List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId, friendId);
-            log.info("Retrieved films from DB liked by user with id={}: {}", userId, films);
+            log.info("Получение фильмов из БД, понравившися пользователю с id={}  {}", userId, films);
             return films;
         } catch (DataIntegrityViolationException ex) {
             String msg = String.format(
-                    "Either user with id=%d or friend with id=%d not found in DB.",
+                    "Любо пользователь с id=%d, либо друг с  id=%d не найден в БД.",
                     userId,
                     friendId
             );

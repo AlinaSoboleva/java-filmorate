@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.BaseTest;
 import ru.yandex.practicum.filmorate.exceptions.FilmIdException;
 import ru.yandex.practicum.filmorate.exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.feed.Event;
+import ru.yandex.practicum.filmorate.model.film.*;
 import ru.yandex.practicum.filmorate.service.EventFeedService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -19,9 +20,7 @@ import static ru.yandex.practicum.filmorate.model.feed.EventOperation.*;
 import static ru.yandex.practicum.filmorate.model.feed.EventType.*;
 import static ru.yandex.practicum.filmorate.testdata.TestConstants.EXISTING_FILM_ID;
 import static ru.yandex.practicum.filmorate.testdata.TestConstants.EXISTING_USER_ID;
-import ru.yandex.practicum.filmorate.model.film.Director;
-import ru.yandex.practicum.filmorate.model.film.Film;
-import ru.yandex.practicum.filmorate.model.film.Mpa;
+
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.MpaService;
@@ -29,7 +28,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import ru.yandex.practicum.filmorate.model.film.Genre;
+
 import ru.yandex.practicum.filmorate.storage.FilmLikeDao;
 import ru.yandex.practicum.filmorate.storage.film.GenreDao;
 
@@ -196,7 +195,7 @@ class FilmServiceImplTest extends BaseTest {
 
     @Test
     void whenThereIsOnlyOneFilmWithTitle() {
-        List<Film> films = filmService.search("OLD", "title");
+        List<Film> films = filmService.search("OLD", SearchBy.TITLE);
         assertThat(films.size()).isEqualTo(1);
         assertThat(films.get(0).getId()).isEqualTo(EXISTING_FILM_5_ID);
         assertThat(films.get(0).getName()).isEqualTo(EXISTING_FILM_5_NAME);
@@ -212,7 +211,7 @@ class FilmServiceImplTest extends BaseTest {
         film.setDirectors(directors);
         film.setMpa(mpa);
         filmService.create(film);
-        List<Film> films = filmService.search("DIR", "director");
+        List<Film> films = filmService.search("DIR", SearchBy.DIRECTOR);
         assertThat(films.size()).isEqualTo(1);
         assertThat(films.get(0).getDirectors().get(0).getName()).isEqualTo("director1");
     }
@@ -224,7 +223,7 @@ class FilmServiceImplTest extends BaseTest {
         filmService.putLike(EXISTING_FILM_2_ID, EXISTING_USER_ID);
         filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID);
         filmService.putLike(EXISTING_FILM_4_ID, EXISTING_USER_ID);
-        List<Film> films = filmService.search("Fi", "title");
+        List<Film> films = filmService.search("Fi", SearchBy.TITLE);
 
         assertThat(films.size()).isEqualTo(4);
         assertThat(films.get(0).getId()).isEqualTo(EXISTING_FILM_3_ID);

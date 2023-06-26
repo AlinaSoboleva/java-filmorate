@@ -6,7 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.Exceptions.ReviewsIdException;
+import ru.yandex.practicum.filmorate.exceptions.ReviewsIdException;
 import ru.yandex.practicum.filmorate.model.film.Review;
 import ru.yandex.practicum.filmorate.storage.film.ReviewsDao;
 

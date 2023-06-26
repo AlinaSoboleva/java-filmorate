@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.BaseTest;
-import ru.yandex.practicum.filmorate.Exceptions.DirectorIdException;
+import ru.yandex.practicum.filmorate.exceptions.DirectorIdException;
 import ru.yandex.practicum.filmorate.model.film.Director;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;

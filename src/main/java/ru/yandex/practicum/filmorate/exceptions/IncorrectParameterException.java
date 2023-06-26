@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.Exceptions;
+package ru.yandex.practicum.filmorate.exceptions;
 
 public class IncorrectParameterException extends RuntimeException {
     private final String parameter;

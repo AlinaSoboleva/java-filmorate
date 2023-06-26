@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.Exceptions;
+package ru.yandex.practicum.filmorate.exceptions;
 
 public class UserAlreadyExistException extends RuntimeException {
     public UserAlreadyExistException(String m) {

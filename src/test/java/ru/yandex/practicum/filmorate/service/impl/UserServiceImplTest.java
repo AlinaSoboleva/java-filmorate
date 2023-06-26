@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.BaseTest;
-import ru.yandex.practicum.filmorate.Exceptions.UserIdException;
+import ru.yandex.practicum.filmorate.exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.service.FriendsService;
 import ru.yandex.practicum.filmorate.storage.FilmLikeDao;

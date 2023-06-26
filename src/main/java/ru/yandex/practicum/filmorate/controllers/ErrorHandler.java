@@ -4,10 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.Exceptions.DirectorIdException;
-import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
-import ru.yandex.practicum.filmorate.Exceptions.ReviewsIdException;
-import ru.yandex.practicum.filmorate.Exceptions.UserIdException;
+import ru.yandex.practicum.filmorate.exceptions.DirectorIdException;
+import ru.yandex.practicum.filmorate.exceptions.FilmIdException;
+import ru.yandex.practicum.filmorate.exceptions.ReviewsIdException;
+import ru.yandex.practicum.filmorate.exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 @RestControllerAdvice

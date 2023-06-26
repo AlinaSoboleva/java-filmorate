@@ -76,8 +76,8 @@ public class FilmController {
 
     @GetMapping("/search")
     public Collection<Film> search(@RequestParam(required = false) String query,
-                                   @RequestParam(required = false) @Valid String by) {
-        return filmService.search(query, SearchBy.fromString(by));
+                                   @RequestParam(required = false) List<SearchBy> by) {
+        return filmService.search(query, by);
     }
 
     @DeleteMapping("/{filmId}")

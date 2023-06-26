@@ -25,11 +25,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
+
+    private static final String OR_CLAUSE = " OR ";
+    private static final String WHERE_CLAUSE = "WHERE ";
 
     private final JdbcTemplate jdbcTemplate;
     private final MpaDao mpaStorage;
@@ -161,7 +165,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> search(String query, SearchBy by) {
+    public List<Film> search(String query, List<SearchBy> by) {
         StringBuilder sql = new StringBuilder("SELECT f.film_id, " +
                 "f.name, " +
                 "f.description, " +
@@ -173,19 +177,16 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN likes l ON f.film_id=l.film_id " +
                 "LEFT JOIN film_director fd ON f.film_id=fd.film_id " +
                 "LEFT JOIN directors d ON fd.director_id=d.director_id ");
-        switch (by) {
-            case TITLE:
-                sql.append("WHERE f.name LIKE CONCAT('%',?,'%') ");
-                break;
-            case DIRECTOR:
-                sql.append("WHERE d.name LIKE CONCAT('%',?,'%') ");
-                break;
-            case TITLE_OR_DIRECTOR:
-                sql.append("WHERE f.name LIKE CONCAT('%',?1,'%') OR d.name LIKE CONCAT('%',?1,'%') ");
-                break;
-        }
-        sql.append("GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, d.director_id " +
-                "ORDER BY COUNT(L.FILM_ID) DESC ");
+
+        String searchParams = by.stream()
+                .map(SearchBy::toSql)
+                .collect(Collectors.joining(OR_CLAUSE));
+
+        sql.append(WHERE_CLAUSE)
+                .append(searchParams)
+                .append(" GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, d.director_id " +
+                        "ORDER BY COUNT(L.FILM_ID) DESC ");
+
         return jdbcTemplate.query(sql.toString(), ((rs, rowNum) -> makeFilm(rs)), query);
     }
 

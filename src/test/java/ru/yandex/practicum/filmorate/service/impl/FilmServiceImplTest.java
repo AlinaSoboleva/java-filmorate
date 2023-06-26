@@ -195,7 +195,7 @@ class FilmServiceImplTest extends BaseTest {
 
     @Test
     void whenThereIsOnlyOneFilmWithTitle() {
-        List<Film> films = filmService.search("OLD", SearchBy.TITLE);
+        List<Film> films = filmService.search("OLD", List.of(SearchBy.title));
         assertThat(films.size()).isEqualTo(1);
         assertThat(films.get(0).getId()).isEqualTo(EXISTING_FILM_5_ID);
         assertThat(films.get(0).getName()).isEqualTo(EXISTING_FILM_5_NAME);
@@ -211,7 +211,7 @@ class FilmServiceImplTest extends BaseTest {
         film.setDirectors(directors);
         film.setMpa(mpa);
         filmService.create(film);
-        List<Film> films = filmService.search("DIR", SearchBy.DIRECTOR);
+        List<Film> films = filmService.search("DIR", List.of(SearchBy.director));
         assertThat(films.size()).isEqualTo(1);
         assertThat(films.get(0).getDirectors().get(0).getName()).isEqualTo("director1");
     }
@@ -223,7 +223,7 @@ class FilmServiceImplTest extends BaseTest {
         filmService.putLike(EXISTING_FILM_2_ID, EXISTING_USER_ID);
         filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID);
         filmService.putLike(EXISTING_FILM_4_ID, EXISTING_USER_ID);
-        List<Film> films = filmService.search("Fi", SearchBy.TITLE);
+        List<Film> films = filmService.search("Fi", List.of(SearchBy.title));
 
         assertThat(films.size()).isEqualTo(4);
         assertThat(films.get(0).getId()).isEqualTo(EXISTING_FILM_3_ID);

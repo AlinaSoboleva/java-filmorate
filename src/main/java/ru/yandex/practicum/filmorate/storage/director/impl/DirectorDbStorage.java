@@ -66,15 +66,10 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public Boolean update(Director director) {
-        try {
-            validationId(director.getId());
-        } catch (DirectorIdException e) {
-            return false;
-        }
+    public void update(Director director) {
+        validationId(director.getId());
         String sql = "UPDATE DIRECTORS SET NAME = ?" + "WHERE DIRECTOR_ID = ?;";
         jdbcTemplate.update(sql, director.getName(), director.getId());
-        return true;
     }
 
     @Override

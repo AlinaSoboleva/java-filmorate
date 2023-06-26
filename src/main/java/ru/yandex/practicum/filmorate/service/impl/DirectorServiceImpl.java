@@ -31,11 +31,8 @@ public class DirectorServiceImpl implements DirectorService {
     }
 
     public Director update(Director director) {
-        if (directorStorage.update(director)) {
-            return director;
-        }
-        log.debug("Режиссёр с id: {} не найден", director.getId());
-        return null;
+        directorStorage.update(director);
+        return director;
     }
 
     public void delete(int id) {

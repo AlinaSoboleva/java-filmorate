@@ -14,7 +14,7 @@ public interface DirectorStorage {
 
     Director create(Director director);
 
-    Boolean update(Director director);
+    void update(Director director);
 
     void delete(int id);
 

@@ -34,10 +34,7 @@ public class DirectorController {
     @PutMapping
     public ResponseEntity<Director> update(@Valid @RequestBody Director director) {
         Director updatedDirector = directorService.update(director);
-        if (updatedDirector == null) {
-            return new ResponseEntity<>(director, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(director, HttpStatus.OK);
+        return new ResponseEntity<>(updatedDirector, HttpStatus.OK);
     }
 
     @DeleteMapping("/{directorId}")

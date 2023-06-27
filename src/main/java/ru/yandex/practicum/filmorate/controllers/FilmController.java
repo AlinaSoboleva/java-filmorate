@@ -24,8 +24,10 @@ public class FilmController {
     private final FilmService filmService;
 
     @PutMapping("/{id}/like/{userId}")
-    public void putLike(@PathVariable Integer id, @PathVariable Integer userId) {
-        filmService.putLike(id, userId);
+    public void putLike(@PathVariable Integer id,
+                        @PathVariable Integer userId,
+                        @RequestParam("mark") Integer mark) {
+        filmService.putLike(id, userId, mark);
     }
 
     @DeleteMapping("/{id}/like/{userId}")

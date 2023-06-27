@@ -101,7 +101,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
         @Override
         public int compare(Film o1, Film o2) {
-            return o2.getRate() - o1.getRate();
+            return Double.compare(o1.getRate(), o2.getRate());
         }
     }
 }

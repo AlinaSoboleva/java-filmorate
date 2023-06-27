@@ -63,10 +63,10 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public void putLike(Integer filmId, Integer userId) {
+    public void putLike(Integer filmId, Integer userId, Integer mark) {
         userStorage.validationId(userId);
         filmStorage.validationId(filmId);
-        likeStorage.putLike(filmId, userId);
+        likeStorage.putLike(filmId, userId, mark);
         eventFeedService.saveEvent(EventType.LIKE,
                 EventOperation.ADD,
                 userId,

@@ -73,13 +73,13 @@ public class UserController {
 
     @GetMapping("/{id}/feed")
     public ResponseEntity<List<Event>> getEventFeed(@PathVariable("id") Integer id) {
-        log.info("Received GET request for event feed of user with id={}", id);
+        log.info("События пользователя с id: {}", id);
         return ResponseEntity.ok(eventFeedService.getEventFeedForUser(id));
     }
 
     @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable("userId") Integer userId) {
-        log.info("Received request to delete user with id={}", userId);
+        log.info("Удалить пользователя с id: {}", userId);
         userService.deleteUser(userId);
     }
 

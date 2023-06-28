@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS USERS (
 CREATE TABLE IF NOT EXISTS LIKES (
                                      FILM_ID INTEGER NOT NULL,
                                      USER_ID INTEGER NOT NULL,
-                                     MARK INTEGER NOT NULL,
+                                     MARK REAL NOT NULL,
                                      CONSTRAINT LIKES_FILM_ID_USER_ID_PK PRIMARY KEY (FILM_ID,USER_ID),
                                      CONSTRAINT LIKES_FILM_ID_FK FOREIGN KEY (FILM_ID) REFERENCES FILMS(FILM_ID) ON DELETE CASCADE,
                                      CONSTRAINT LIKES_USER_ID_FK FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID) ON DELETE CASCADE

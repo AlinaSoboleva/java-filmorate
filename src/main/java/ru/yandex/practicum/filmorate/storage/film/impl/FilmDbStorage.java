@@ -42,49 +42,73 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> findAllTopFilms(Integer count, Integer genreId, Integer year) {
-        String sql = "SELECT * " +
-                "FROM FILMS AS f " +
-                "LEFT JOIN LIKES AS L on F.FILM_ID = L.FILM_ID " +
-                "LEFT JOIN FILM_GENRE AS FG on F.FILM_ID = FG.FILM_ID " +
+        String sql = "SELECT f.film_id film_id, " +
+                "f.name name, " +
+                "f.description description, " +
+                "f.release_date release_date," +
+                "f.duration duration, " +
+                "f.rating_id rating_id, " +
+                "AVG(l.mark) avg_mark " +
+                "FROM Films AS f " +
+                "LEFT JOIN Likes AS l on f.film_id = l.film_id " +
+                "LEFT JOIN FILM_GENRE AS fg on f.film_id = fg.film_id " +
                 "WHERE genre_id = ? and EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
-                "GROUP BY F.FILM_ID " +
-                "ORDER BY AVG(L.MARK) " +
-                "DESC , f.FILM_ID LIMIT ?";
+                "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
+                "ORDER BY AVG(l.mark) DESC, " +
+                "f.film_id LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), genreId, year, count);
     }
 
     @Override
     public Collection<Film> findAllTopIfGenre(Integer count, Integer genreId) {
-        String sql = "SELECT * " +
-                "FROM FILMS AS f " +
-                "LEFT JOIN LIKES AS L on F.FILM_ID = L.FILM_ID " +
-                "LEFT JOIN FILM_GENRE AS FG on F.FILM_ID = FG.FILM_ID " +
+        String sql = "SELECT f.film_id film_id, " +
+                "f.name name, " +
+                "f.description description, " +
+                "f.release_date release_date," +
+                "f.duration duration, " +
+                "f.rating_id rating_id, " +
+                "AVG(l.mark) avg_mark " +
+                "FROM Films AS f " +
+                "LEFT JOIN Likes AS l on f.film_id = l.film_id " +
+                "LEFT JOIN FILM_GENRE AS fg on f.FILM_ID = fg.FILM_ID " +
                 "WHERE genre_id = ? " +
-                "GROUP BY F.FILM_ID " +
-                "ORDER BY AVG(L.MARK) " +
-                "DESC , f.FILM_ID LIMIT ?";
+                "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
+                "ORDER BY AVG(l.mark) DESC, " +
+                "f.film_id LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), genreId, count);
     }
 
     @Override
     public Collection<Film> findAllTopIfYear(Integer count, Integer year) {
-        String sql = "SELECT * " +
-                "FROM FILMS AS f " +
-                "LEFT JOIN LIKES AS L on F.FILM_ID = L.FILM_ID " +
+        String sql = "SELECT f.film_id film_id, " +
+                "f.name name, " +
+                "f.description description, " +
+                "f.release_date release_date," +
+                "f.duration duration, " +
+                "f.rating_id rating_id, " +
+                "AVG(l.mark) avg_mark " +
+                "FROM Films AS f " +
+                "LEFT JOIN Likes AS l on f.film_id = l.film_id " +
                 "WHERE EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
-                "GROUP BY F.FILM_ID " +
-                "ORDER BY AVG(L.MARK) " +
-                "DESC , f.FILM_ID LIMIT ?";
+                "GROUP BY f.film_id " +
+                "ORDER BY AVG(l.mark) DESC, " +
+                "f.film_id LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), year, count);
     }
 
     @Override
     public Collection<Film> findTopFilms(Integer count) {
-        String sql = "SELECT * " +
-                "FROM FILMS AS f " +
-                "LEFT JOIN LIKES AS L on F.FILM_ID = L.FILM_ID " +
-                "GROUP BY F.FILM_ID, L.USER_ID " +
-                "ORDER BY AVG(L.MARK) " +
+        String sql = "SELECT f.film_id film_id, " +
+                "f.name name, " +
+                "f.description description, " +
+                "f.release_date release_date," +
+                "f.duration duration, " +
+                "f.rating_id rating_id, " +
+                "AVG(l.mark) avg_mark " +
+                "FROM Films AS f " +
+                "LEFT JOIN Likes AS l on f.film_id = l.film_id " +
+                "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
+                "ORDER BY AVG(l.mark) " +
                 "DESC LIMIT ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), count);
     }
@@ -96,7 +120,7 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM Likes l WHERE l.user_id <> ? " + // ID остальных пользователей
                 "AND l.film_id IN (" + // которые поставили лайки тем же фильмам, что и пользователь в запросе
                 "SELECT ll.film_id FROM " +
-                "Likes ll WHERE ll.user_id = ?) " +
+                "Likes ll WHERE ll.user_id = ? AND ll.MARK > 5.0 ) " +
                 "GROUP BY l.user_id " + // группировка, так как используем аггрегирующую функцию
                 "ORDER BY avg_mark DESC " + // сортируем по убыванию
                 "LIMIT 1 "; // выбираем максимальное совпадение
@@ -112,13 +136,22 @@ public class FilmDbStorage implements FilmStorage {
             return Collections.emptyList();
         }
 
-        String recommendedFilmsSql = "SELECT * FROM Films fm " + // все фильмы
+        String recommendedFilmsSql = "SELECT fm.film_id film_id, " +
+                "fm.name name, " +
+                "fm.description description, " +
+                "fm.release_date release_date, " +
+                "fm.duration duration, " +
+                "fm.rating_id rating_id, " +
+                "AVG(lk.MARK) av_mark " +
+                "FROM Films fm " + // все фильмы
                 "LEFT JOIN Likes lk ON fm.film_id = lk.film_id " +
                 "WHERE lk.user_id = ? " +
                 "AND lk.film_id NOT IN (" + // и которым наш пользователь не ставил лайк
                 "SELECT llk.film_id FROM LIKES llk " +
                 "WHERE llk.user_id = ?) " +
-                "AND lk.mark > 5";
+                "GROUP BY fm.film_id, fm.name, fm.description, fm.release_date, fm.duration, fm.rating_id " +
+                "HAVING AVG(lk.MARK) > 5.0 " +
+                "ORDER BY av_mark DESC";
         return jdbcTemplate.query(recommendedFilmsSql, (rs, rowNum) -> makeFilm(rs), recommendedUserId, id);
     }
 

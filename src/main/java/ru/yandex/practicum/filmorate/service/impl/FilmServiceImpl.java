@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.model.feed.EventOperation;
 import ru.yandex.practicum.filmorate.model.feed.EventType;
 import ru.yandex.practicum.filmorate.model.film.Film;
@@ -57,10 +56,7 @@ public class FilmServiceImpl implements FilmService {
         filmStorage.validationId(filmId);
         userStorage.validationId(userId);
         likeStorage.deleteLike(filmId, userId);
-        eventFeedService.saveEvent(EventType.LIKE,
-                EventOperation.REMOVE,
-                userId,
-                filmId);
+        eventFeedService.saveEvent(EventType.LIKE, EventOperation.REMOVE, userId, filmId);
     }
 
     @Override
@@ -68,10 +64,7 @@ public class FilmServiceImpl implements FilmService {
         userStorage.validationId(userId);
         filmStorage.validationId(filmId);
         likeStorage.putLike(filmId, userId, mark);
-        eventFeedService.saveEvent(EventType.LIKE,
-                EventOperation.ADD,
-                userId,
-                filmId);
+        eventFeedService.saveEvent(EventType.LIKE, EventOperation.ADD, userId, filmId);
     }
 
     @Override

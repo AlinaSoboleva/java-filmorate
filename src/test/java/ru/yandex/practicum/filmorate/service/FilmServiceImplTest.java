@@ -60,6 +60,7 @@ public class FilmServiceImplTest extends BaseTest {
         assertThat(result.get(3).getRate()).isEqualTo(6.5);
         assertThat(result.get(4).getRate()).isEqualTo(5.5);
     }
+
     @Test
     void findTopFilmsByGenre_returnsFilms_sortedByRate() {
         filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID, 10);
@@ -232,14 +233,10 @@ public class FilmServiceImplTest extends BaseTest {
         assertThat(films.get(0).getId()).isEqualTo(EXISTING_FILM_ID);
         assertThat(films.get(1).getId()).isEqualTo(EXISTING_FILM_2_ID);
     }
+
     @Test
     void getRecommendations_marksOfOtherUsersMakeNoDifference() {
-        User created = userService.create(
-                new User("email@email.com",
-                        "login",
-                        "name",
-                        LocalDate.of(1990, 10, 10))
-        );
+        User created = userService.create(new User("email@email.com", "login", "name", LocalDate.of(1990, 10, 10)));
 
         // common likes
         filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID, 9);
@@ -322,10 +319,7 @@ public class FilmServiceImplTest extends BaseTest {
         film.setDirectors(directors);
         directorStorage.delete(EXISTING_DIRECTOR_ID);
 
-        assertThrows(
-                DirectorIdException.class,
-                () -> filmService.getFilmsByDirectorId(EXISTING_DIRECTOR_ID, SORT_BY_YEAR)
-        );
+        assertThrows(DirectorIdException.class, () -> filmService.getFilmsByDirectorId(EXISTING_DIRECTOR_ID, SORT_BY_YEAR));
 
     }
 

@@ -26,7 +26,7 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public void putLike(@PathVariable Integer id,
                         @PathVariable Integer userId,
-                        @RequestParam("mark") Integer mark) {
+                        @RequestParam(value = "mark", required = false, defaultValue = "10") Integer mark) {
         filmService.putLike(id, userId, mark);
     }
 

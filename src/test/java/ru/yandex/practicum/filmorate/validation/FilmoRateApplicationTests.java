@@ -166,11 +166,11 @@ class FilmoRateApplicationTests extends BaseTest {
     @Test
     @DisplayName("Получение рекомендаций фильмов по id")
     public void testGetRecommendations() {
-        likeStorage.putLike(2,1);
-        likeStorage.putLike(3,1);
-        likeStorage.putLike(1,2);//фильм для рекомендации - FILM
-        likeStorage.putLike(2,2);
-        likeStorage.putLike(3,2);
+        likeStorage.putLike(2,1, 10);
+        likeStorage.putLike(3,1, 10);
+        likeStorage.putLike(1,2, 10);//фильм для рекомендации - FILM
+        likeStorage.putLike(2,2, 10);
+        likeStorage.putLike(3,2, 10);
 
         List<Film> films = filmStorage.getRecommendations(1);
 

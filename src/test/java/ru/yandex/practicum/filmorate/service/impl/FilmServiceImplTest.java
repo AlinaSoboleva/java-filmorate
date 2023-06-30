@@ -50,7 +50,7 @@ class FilmServiceImplTest extends BaseTest {
     void whenAddLikeByNonExistingUser_getEventFeedForNonExistingUserThrows() {
         assertThrows(
                 UserIdException.class,
-                () -> filmService.putLike(EXISTING_FILM_ID, 1000)
+                () -> filmService.putLike(EXISTING_FILM_ID, 1000, 10)
         );
         assertThrows(
                 UserIdException.class,
@@ -62,7 +62,7 @@ class FilmServiceImplTest extends BaseTest {
     void whenAddLikeToNonExistingFilm_eventNotSavedToDB() {
         assertThrows(
                 FilmIdException.class,
-                () -> filmService.putLike(1000, EXISTING_USER_ID)
+                () -> filmService.putLike(1000, EXISTING_USER_ID, 10)
         );
         List<Event> eventFeedForUser = eventFeedService.getEventFeedForUser(EXISTING_USER_ID);
         assertThat(eventFeedForUser).isEmpty();
@@ -92,7 +92,7 @@ class FilmServiceImplTest extends BaseTest {
 
     @Test
     void whenAddLikeToFilm_eventSavedToDB() {
-        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID);
+        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID, 10);
 
         List<Event> eventFeedForUser = eventFeedService.getEventFeedForUser(EXISTING_USER_ID);
         assertThat(eventFeedForUser.size()).isEqualTo(1);
@@ -105,7 +105,7 @@ class FilmServiceImplTest extends BaseTest {
 
     @Test
     void whenAddLikeThenRemoveLike_twoEventsSavedToDB() {
-        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID);
+        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID, 7);
         filmService.deleteLike(EXISTING_FILM_ID, EXISTING_USER_ID);
 
         List<Event> eventFeedForUser = eventFeedService.getEventFeedForUser(EXISTING_USER_ID);
@@ -137,7 +137,7 @@ class FilmServiceImplTest extends BaseTest {
         Film byId = filmService.getById(EXISTING_FILM_ID);
         Genre genre = genreDao.getById(EXISTING_GENRE_ID);
         byId.getGenres().add(genre);
-        likeDao.putLike(byId.getId(), EXISTING_USER_ID);
+        likeDao.putLike(byId.getId(), EXISTING_USER_ID, 10);
 
         filmService.update(byId);
 
@@ -150,8 +150,8 @@ class FilmServiceImplTest extends BaseTest {
 
     @Test
     void whenUsersAddLikeToCommonFilm_getCommonFilms_returnsFilm() {
-        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID);
-        filmService.putLike(EXISTING_FILM_ID, EXISTING_FRIEND_ID);
+        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID, 10);
+        filmService.putLike(EXISTING_FILM_ID, EXISTING_FRIEND_ID, 8);
 
         List<Film> commonFilms = filmService.getCommonFilms(EXISTING_USER_ID, EXISTING_FRIEND_ID);
         assertThat(commonFilms.size()).isEqualTo(1);
@@ -166,11 +166,11 @@ class FilmServiceImplTest extends BaseTest {
                         "name",
                         LocalDate.of(1990, 10, 10))
         );
-        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID);
-        filmService.putLike(EXISTING_FILM_ID, EXISTING_FRIEND_ID);
-        filmService.putLike(EXISTING_FILM_ID, created.getId());
-        filmService.putLike(EXISTING_FILM_2_ID, EXISTING_USER_ID);
-        filmService.putLike(EXISTING_FILM_2_ID, EXISTING_FRIEND_ID);
+        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID, 10);
+        filmService.putLike(EXISTING_FILM_ID, EXISTING_FRIEND_ID, 10);
+        filmService.putLike(EXISTING_FILM_ID, created.getId(), 10);
+        filmService.putLike(EXISTING_FILM_2_ID, EXISTING_USER_ID, 9);
+        filmService.putLike(EXISTING_FILM_2_ID, EXISTING_FRIEND_ID, 9);
 
         List<Film> commonFilms = filmService.getCommonFilms(EXISTING_USER_ID, EXISTING_FRIEND_ID);
         assertThat(commonFilms.size()).isEqualTo(2);
@@ -186,8 +186,8 @@ class FilmServiceImplTest extends BaseTest {
 
     @Test
     void whenRemoveCommonLikeFromFilm_getCommonFilms_doesnt_includeFilm() {
-        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID);
-        filmService.putLike(EXISTING_FILM_ID, EXISTING_FRIEND_ID);
+        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID, 9);
+        filmService.putLike(EXISTING_FILM_ID, EXISTING_FRIEND_ID, 8);
         filmService.deleteLike(EXISTING_FILM_ID, EXISTING_USER_ID);
         List<Film> commonFilms = filmService.getCommonFilms(EXISTING_USER_ID, EXISTING_FRIEND_ID);
         assertThat(commonFilms).isEmpty();
@@ -218,11 +218,11 @@ class FilmServiceImplTest extends BaseTest {
 
     @Test
     void whenReturnMorePopularFilm() {
-        filmService.putLike(EXISTING_FILM_3_ID, EXISTING_USER_ID);
-        filmService.putLike(EXISTING_FILM_3_ID, EXISTING_FRIEND_ID);
-        filmService.putLike(EXISTING_FILM_2_ID, EXISTING_USER_ID);
-        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID);
-        filmService.putLike(EXISTING_FILM_4_ID, EXISTING_USER_ID);
+        filmService.putLike(EXISTING_FILM_3_ID, EXISTING_USER_ID, 10);
+        filmService.putLike(EXISTING_FILM_3_ID, EXISTING_FRIEND_ID, 10);
+        filmService.putLike(EXISTING_FILM_2_ID, EXISTING_USER_ID, 9);
+        filmService.putLike(EXISTING_FILM_ID, EXISTING_USER_ID, 8);
+        filmService.putLike(EXISTING_FILM_4_ID, EXISTING_USER_ID, 7);
         List<Film> films = filmService.search("Fi", List.of(SearchBy.title));
 
         assertThat(films.size()).isEqualTo(4);

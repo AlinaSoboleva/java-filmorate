@@ -23,7 +23,7 @@ class UserServiceImplTest extends BaseTest {
     void whenDeleteUserWithLikesFriends_user_deleted() {
 
         User userById = userService.getUserById(EXISTING_USER_ID);
-        filmLikeDao.putLike(EXISTING_FILM_ID, userById.getId());
+        filmLikeDao.putLike(EXISTING_FILM_ID, userById.getId(), 10);
         friendsService.addFriend(EXISTING_USER_ID, EXISTING_FRIEND_ID);
         userService.deleteUser(EXISTING_USER_ID);
         assertThrows(UserIdException.class, () -> userService.getUserById(EXISTING_USER_ID));

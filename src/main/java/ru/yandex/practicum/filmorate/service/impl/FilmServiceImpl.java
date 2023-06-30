@@ -56,21 +56,15 @@ public class FilmServiceImpl implements FilmService {
         filmStorage.validationId(filmId);
         userStorage.validationId(userId);
         likeStorage.deleteLike(filmId, userId);
-        eventFeedService.saveEvent(EventType.LIKE,
-                EventOperation.REMOVE,
-                userId,
-                filmId);
+        eventFeedService.saveEvent(EventType.LIKE, EventOperation.REMOVE, userId, filmId);
     }
 
     @Override
-    public void putLike(Integer filmId, Integer userId) {
+    public void putLike(Integer filmId, Integer userId, Integer mark) {
         userStorage.validationId(userId);
         filmStorage.validationId(filmId);
-        likeStorage.putLike(filmId, userId);
-        eventFeedService.saveEvent(EventType.LIKE,
-                EventOperation.ADD,
-                userId,
-                filmId);
+        likeStorage.putLike(filmId, userId, mark);
+        eventFeedService.saveEvent(EventType.LIKE, EventOperation.ADD, userId, filmId);
     }
 
     @Override

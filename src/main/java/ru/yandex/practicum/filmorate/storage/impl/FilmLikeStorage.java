@@ -19,8 +19,8 @@ public class FilmLikeStorage implements FilmLikeDao {
     }
 
     @Override
-    public void putLike(Integer filmId, Integer userId) {
-        String sql = "MERGE INTO LIKES KEY (FILM_ID, USER_ID) VALUES (?, ?);";
-        jdbcTemplate.update(sql, filmId, userId);
+    public void putLike(Integer filmId, Integer userId, Integer mark) {
+        String sql = "MERGE INTO LIKES KEY (FILM_ID, USER_ID, MARK) VALUES (?, ?, ?);";
+        jdbcTemplate.update(sql, filmId, userId, mark);
     }
 }

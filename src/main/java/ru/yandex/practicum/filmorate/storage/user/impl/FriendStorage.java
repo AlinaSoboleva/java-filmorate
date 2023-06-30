@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.user.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -17,22 +19,19 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class FriendStorage implements FriendDao {
 
     private final JdbcTemplate jdbcTemplate;
-
+    @Qualifier("userDbStorage")
     private final UserStorage userStorage;
 
-    public FriendStorage(JdbcTemplate jdbcTemplate, UserDbStorage userStorage) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.userStorage = userStorage;
-    }
-
     @Override
-    public void deleteFriend(Integer id, Integer friendId) {
+    public int deleteFriend(Integer id, Integer friendId) {
         String sql = "DELETE FROM FRIENDS WHERE USER_ID = ? AND FRIEND_ID = ?";
-        jdbcTemplate.update(sql, id, friendId);
+        int rowsChanged = jdbcTemplate.update(sql, id, friendId);
         log.info("Пользователь с id {} удаляет пользователя с id {}", id, friendId);
+        return rowsChanged;
     }
 
     @Override

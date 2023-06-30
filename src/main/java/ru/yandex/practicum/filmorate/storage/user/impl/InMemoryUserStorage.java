@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.user.impl;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.Exceptions.UserAlreadyExistException;
-import ru.yandex.practicum.filmorate.Exceptions.UserIdException;
+import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
+import ru.yandex.practicum.filmorate.exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -55,8 +55,8 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void delete(User user) {
-        users.remove(user.getId());
+    public void delete(Integer userId) {
+        users.remove(userId);
     }
 
     @Override

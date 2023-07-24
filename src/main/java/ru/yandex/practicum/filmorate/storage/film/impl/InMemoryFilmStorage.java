@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.film.impl;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.Exceptions.FilmIdException;
+import ru.yandex.practicum.filmorate.exceptions.FilmIdException;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.film.SearchBy;
+import ru.yandex.practicum.filmorate.model.film.Sort;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.*;
@@ -20,9 +22,44 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> findAllTopFilms(Integer count) {
+    public Collection<Film> findAllTopFilms(Integer count, Integer genreId, Integer year) {
         List<Film> films = getFilms().stream().sorted(new FilmLikesComparator()).collect(Collectors.toList());
         return films.stream().limit(count).collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Film> findAllTopIfGenre(Integer count, Integer genreId) {
+        return null;
+    }
+
+    @Override
+    public Collection<Film> findAllTopIfYear(Integer count, Integer year) {
+        return null;
+    }
+
+    @Override
+    public Collection<Film> findTopFilms(Integer count) {
+        return null;
+    }
+
+    @Override
+    public Collection<Film> getFilmsByDirectorId(int id, Sort sort) {
+        return null;
+    }
+
+    @Override
+    public List<Film> search(String query, List<SearchBy> by) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getRecommendations(Integer id) {
+        return null;
     }
 
     @Override
@@ -46,8 +83,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void delete(Film film) {
-        getFilms().remove(film.getId());
+    public void delete(Integer filmId) {
+        getFilms().removeIf(f -> f.getId() == filmId);
     }
 
     private int getId() {
@@ -64,7 +101,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
         @Override
         public int compare(Film o1, Film o2) {
-            return o2.getRate() - o1.getRate();
+            return Double.compare(o1.getRate(), o2.getRate());
         }
     }
 }

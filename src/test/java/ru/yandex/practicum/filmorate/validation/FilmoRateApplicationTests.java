@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
+import ru.yandex.practicum.filmorate.BaseTest;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.Genre;
 import ru.yandex.practicum.filmorate.model.film.Mpa;
@@ -14,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.storage.film.impl.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.impl.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.film.impl.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.impl.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.user.impl.UserDbStorage;
 
 import java.time.LocalDate;
@@ -21,17 +20,14 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest
-@AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Sql(scripts = {"/schema.sql", "/filmTestData.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/dropAll.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-class FilmoRateApplicationTests {
+class FilmoRateApplicationTests extends BaseTest {
     private final UserDbStorage userStorage;
     private final FilmDbStorage filmStorage;
     private final MpaStorage mpaStorage;
 
     private final GenreStorage genreStorage;
+    private final FilmLikeStorage likeStorage;
 
 
     @Test
@@ -63,7 +59,7 @@ class FilmoRateApplicationTests {
         assertThat(users.size()).isEqualTo(3);
         assertThat(users.get(2)).hasFieldOrPropertyWithValue("email", "email@yandex.ru");
 
-        userStorage.delete(user);
+        userStorage.delete(user.getId());
 
         List<User> users2 = (List<User>) userStorage.getUsers();
 
@@ -100,7 +96,7 @@ class FilmoRateApplicationTests {
 
         List<Film> films = (List<Film>) filmStorage.getFilms();
 
-        assertThat(films.size()).isEqualTo(3);
+        assertThat(films.size()).isEqualTo(5);
     }
 
     @Test
@@ -111,14 +107,14 @@ class FilmoRateApplicationTests {
         filmStorage.create(film);
         List<Film> films = (List<Film>) filmStorage.getFilms();
 
-        assertThat(films.size()).isEqualTo(4);
-        assertThat(films.get(3)).hasFieldOrPropertyWithValue("name", "newFilm");
+        assertThat(films.size()).isEqualTo(6);
+        assertThat(films.get(5)).hasFieldOrPropertyWithValue("name", "newFilm");
 
-        filmStorage.delete(film);
+        filmStorage.delete(film.getId());
 
         List<Film> films2 = (List<Film>) filmStorage.getFilms();
 
-        assertThat(films2.size()).isEqualTo(3);
+        assertThat(films2.size()).isEqualTo(5);
     }
 
     @Test
@@ -130,7 +126,7 @@ class FilmoRateApplicationTests {
         filmStorage.update(film);
         List<Film> films = (List<Film>) filmStorage.getFilms();
 
-        assertThat(films.size()).isEqualTo(3);
+        assertThat(films.size()).isEqualTo(5);
         assertThat(films.get(0)).hasFieldOrPropertyWithValue("name", "newFilm");
         assertThat(films.get(0)).hasFieldOrPropertyWithValue("description", "newDesc");
     }
@@ -165,5 +161,20 @@ class FilmoRateApplicationTests {
         List<Genre> genreList = (List<Genre>) genreStorage.findAll();
 
         assertThat(genreList.size()).isEqualTo(6);
+    }
+
+    @Test
+    @DisplayName("Получение рекомендаций фильмов по id")
+    public void testGetRecommendations() {
+        likeStorage.putLike(2,1, 10);
+        likeStorage.putLike(3,1, 10);
+        likeStorage.putLike(1,2, 10);//фильм для рекомендации - FILM
+        likeStorage.putLike(2,2, 10);
+        likeStorage.putLike(3,2, 10);
+
+        List<Film> films = filmStorage.getRecommendations(1);
+
+        assertThat(films.size()).isEqualTo(1);
+        assertThat(films.get(0)).hasFieldOrPropertyWithValue("name", "FILM");
     }
 }

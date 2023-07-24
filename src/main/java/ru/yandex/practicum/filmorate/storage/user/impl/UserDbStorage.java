@@ -1,12 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.user.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.Exceptions.UserIdException;
+import ru.yandex.practicum.filmorate.exceptions.UserIdException;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -18,14 +19,11 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Slf4j
-@Component
+@Component("userDbStorage")
+@RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public void create(User user) {
@@ -61,9 +59,9 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void delete(User user) {
+    public void delete(Integer userId) {
         String sql = "DELETE FROM USERS WHERE USER_ID = ?";
-        jdbcTemplate.update(sql, user.getId());
+        jdbcTemplate.update(sql, userId);
     }
 
     @Override
